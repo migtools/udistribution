@@ -1,5 +1,5 @@
 # udistribution
-Go library providing functions and interfaces for accessing distribution/distribution without a serving HTTP server.
+Go library providing a client to interface with storage drivers of distribution/distribution without going a serving HTTP server.
 
 Goal:
 - Given a config and/or environment variables conforming to [available configurations](https://docs.docker.com/registry/configuration/)
