@@ -53,8 +53,8 @@ func TestParseEnvironment(t *testing.T) {
 					"REGISTRY_HTTP_ADDR=localhost:6000",
 				},
 			},
-			wantConfig: getWantConfig(
-				withStorage(configuration.Storage{
+			wantConfig: GetWantConfig(
+				WithStorage(configuration.Storage{
 					"s3": configuration.Parameters{
 						"accesskeyid":     string("AKIAIOSFODNN7EXAMPLE"),
 						"bucket":          string("test-bucket"),
@@ -64,8 +64,8 @@ func TestParseEnvironment(t *testing.T) {
 						"use":             map[string]interface{}{"http": bool(true)},
 					},
 				}),
-				withHTTP(HTTP{Addr: "localhost:6000"}),
-				withHeaders(http.Header{"X-Content-Type-Options": []string{"nosniff"}}),
+				WithHTTP(HTTP{Addr: "localhost:6000"}),
+				WithHeaders(http.Header{"X-Content-Type-Options": []string{"nosniff"}}),
 			),
 		},
 	}
