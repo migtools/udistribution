@@ -16,7 +16,7 @@ type v0_1Configuration configuration.Configuration
 // Get configuration given array of strings as environment variables and current configuration object
 // a modification from Parse https://github.com/distribution/distribution/blob/32ccbf193d5016bd0908d2eb636333d3cca22534/configuration/configuration.go#L649-L695
 func ParseEnvironment(configString string, envs []string) (config *configuration.Configuration, err error) {
-	// parse configuration and enviroment variables from parameters
+	// parse configuration and environment variables from parameters
 	p := GetParser(envs)
 
 	config = new(configuration.Configuration)
