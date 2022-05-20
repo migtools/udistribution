@@ -30,7 +30,7 @@ func TestNewClient(t *testing.T) {
 			wantClient: &Client{
 				config: uconfig.GetWantConfig(),
 			},
-			wantErr:    false,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {

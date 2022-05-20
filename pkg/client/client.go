@@ -28,8 +28,8 @@ import (
 )
 
 type Client struct {
-	config   *configuration.Configuration
-	app 	*handlers.App
+	config *configuration.Configuration
+	app    *handlers.App
 }
 
 // NewClient creates a new client from the provided configuration.
@@ -53,7 +53,7 @@ func NewClient(configString string, envs []string) (client *Client, err error) {
 	uuid.Loggerf = dcontext.GetLogger(ctx).Warnf
 	client = &Client{
 		config: config,
-		app: handlers.NewApp(ctx, config),
+		app:    handlers.NewApp(ctx, config),
 	}
 	return client, err
 	// // initialize driver factory like https://github.com/distribution/distribution/blob/1d33874951b749df7e070b1c702ea418bbc57ed1/registry/root.go#L55
@@ -62,7 +62,7 @@ func NewClient(configString string, envs []string) (client *Client, err error) {
 	// 	storageParams = make(configuration.Parameters)
 	// }
 	// storageParams["useragent"] = fmt.Sprintf("docker-distribution/%s %s", version.Version, runtime.Version())
-	
+
 	// driver, err := factory.Create(config.Storage.Type(), storageParams)
 	// if err != nil {
 	// 	fmt.Fprintf(os.Stderr, "failed to construct %s driver: %v", config.Storage.Type(), err)
