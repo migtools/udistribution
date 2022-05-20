@@ -7,3 +7,8 @@ Goal:
 
 Initial priority:
 s3, gcs, azure storage drivers
+
+NOTICE:
+- This library contains some parts from [distribution/distribution](https://github.com/distribution/distribution) which is licensed under the Apache License 2.0.
+  - Some parts has been modified to accommodate usage in this library.
+  - A copy of the original distribution/distribution license is included in the repository at [LICENSE](LICENSE)
