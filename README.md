@@ -8,6 +8,9 @@ Goal:
 Initial priority:
 s3, gcs, azure storage drivers
 
+Known issues:
+Prometheus metrics config must be disabled.
+
 NOTICE:
 - This library contains some parts from [distribution/distribution](https://github.com/distribution/distribution) which is licensed under the Apache License 2.0.
   - Some parts has been modified to accommodate usage in this library.

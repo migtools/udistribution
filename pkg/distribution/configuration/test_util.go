@@ -194,7 +194,7 @@ var defaultWantConfig = configuration.Configuration{
 				Enabled bool   `yaml:"enabled,omitempty"`
 				Path    string `yaml:"path,omitempty"`
 			}{
-				Enabled: true,
+				Enabled: false,
 				Path:    "/metrics",
 			},
 		},
