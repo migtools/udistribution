@@ -4,14 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	uconfiguration "github.com/kaovilai/udistribution/pkg/configuration"
+	uconfiguration "github.com/kaovilai/udistribution/pkg/distribution/configuration"
 
 	"runtime"
 
 	distribution "github.com/distribution/distribution/v3"
 	"github.com/distribution/distribution/v3/configuration"
 	dcontext "github.com/distribution/distribution/v3/context"
-	"github.com/distribution/distribution/v3/reference"
 	"github.com/distribution/distribution/v3/registry/storage"
 	"github.com/distribution/distribution/v3/registry/storage/driver"
 	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
@@ -19,17 +18,17 @@ import (
 )
 
 type Client struct {
-	config *configuration.Configuration
-	storage driver.StorageDriver
+	config   *configuration.Configuration
+	storage  driver.StorageDriver
 	registry distribution.Namespace
 }
 
 // NewClient creates a new client from the provided configuration.
-func NewClient(config *configuration.Configuration, env []string) (client *Client, err error) {
-	if config == nil {
-		config = getDefaultConfig()
+func NewClient(configString string, env []string) (client *Client, err error) {
+	if configString == "" {
+		configString = DefaultConfig
 	}
-	c, err := uconfiguration.ParseEnvironment(config, env)
+	c, err := uconfiguration.ParseEnvironment(configString, env)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +37,7 @@ func NewClient(config *configuration.Configuration, env []string) (client *Clien
 	}
 	client.initStorage()
 	ctx := dcontext.WithVersion(dcontext.Background(), version.Version)
-	client.registry, err = storage.NewRegistry(ctx, client.storage, )
+	client.registry, err = storage.NewRegistry(ctx, client.storage)
 	return client, err
 }
 
@@ -63,17 +62,4 @@ func (c *Client) initStorage() (err error) {
 
 func (c *Client) Registry() distribution.Namespace {
 	return c.registry
-}
-
-func testNamespace(){
-	c, err := NewClient(nil, nil)
-	if err != nil {
-		panic(err)
-	}
-	r := c.Registry()
-	ref, err := reference.ParseNamed("test/test")
-	if err != nil {
-		panic(err)
-	}
-	r.Repository(dcontext.Background(), ref)
 }
