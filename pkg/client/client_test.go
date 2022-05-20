@@ -80,13 +80,17 @@ func TestNewClient(t *testing.T) {
 				tt.wantClient.config.HTTP.Secret = gotClient.config.HTTP.Secret
 			}
 			// TODO: remove ignore storage filesystem useragent
-			tt.wantClient.config.Storage["filesystem"]["useragent"] = gotClient.config.Storage["filesystem"]["useragent"]
+			for i, _ := range gotClient.config.Storage {
+				if gotClient.config.Storage[i]["useragent"] != nil && gotClient.config.Storage[i]["useragent"] != "" {
+					tt.wantClient.config.Storage[i]["useragent"] = gotClient.config.Storage[i]["useragent"]
+				}
+			}
 			// if not disable then enable per https://github.com/distribution/distribution/blob/f637481c67241151dc6d6fe2b12852e2ad8d70c2/registry/handlers/app.go#L225-L227
 			if !tt.wantClient.config.Validation.Enabled {
 				tt.wantClient.config.Validation.Enabled = !tt.wantClient.config.Validation.Disabled
 			}
 			if !reflect.DeepEqual(gotClient, tt.wantClient) {
-				t.Errorf(cmp.Diff(gotClient.app, tt.wantClient.app))
+				// t.Errorf(cmp.Diff(gotClient.app, tt.wantClient.app))
 				t.Errorf(cmp.Diff(gotClient.config, tt.wantClient.config))
 				t.Errorf("NewClient() = %v, want %v", gotClient, tt.wantClient)
 			}
