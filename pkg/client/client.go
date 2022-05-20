@@ -25,11 +25,11 @@ type Client struct {
 }
 
 // NewClient creates a new client from the provided configuration.
-func NewClient(configString string, env []string) (client *Client, err error) {
+func NewClient(configString string, envs []string) (client *Client, err error) {
 	if configString == "" {
 		configString = def.Config
 	}
-	c, err := uconfiguration.ParseEnvironment(configString, env)
+	c, err := uconfiguration.ParseEnvironment(configString, envs)
 	if err != nil {
 		return nil, err
 	}
