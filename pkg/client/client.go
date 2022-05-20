@@ -15,6 +15,7 @@ import (
 	"github.com/distribution/distribution/v3/registry/storage/driver"
 	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
 	"github.com/distribution/distribution/v3/version"
+	def "github.com/kaovilai/udistribution/pkg/client/default"
 )
 
 type Client struct {
@@ -26,7 +27,7 @@ type Client struct {
 // NewClient creates a new client from the provided configuration.
 func NewClient(configString string, env []string) (client *Client, err error) {
 	if configString == "" {
-		configString = DefaultConfig
+		configString = def.Config
 	}
 	c, err := uconfiguration.ParseEnvironment(configString, env)
 	if err != nil {

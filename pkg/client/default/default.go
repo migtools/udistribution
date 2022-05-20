@@ -1,6 +1,6 @@
-package client
+package def
 
-const DefaultConfig = `version: 0.1
+const Config = `version: 0.1
 log:
   level: debug
   fields:

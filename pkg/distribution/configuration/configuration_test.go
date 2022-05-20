@@ -8,7 +8,7 @@ import (
 
 	"github.com/distribution/distribution/v3/configuration"
 	"github.com/google/go-cmp/cmp"
-	d "github.com/kaovilai/udistribution/pkg/client/default"
+	def "github.com/kaovilai/udistribution/pkg/client/default"
 )
 
 var defaultWantConfig = configuration.Configuration{
@@ -326,7 +326,7 @@ func TestParseEnvironment(t *testing.T) {
 		{
 			name: "default config",
 			args: args{
-				configString: d.DefaultConfig,
+				configString: def.Config,
 				envs:         []string{},
 			},
 			wantConfig: &defaultWantConfig,
@@ -334,7 +334,7 @@ func TestParseEnvironment(t *testing.T) {
 		{
 			name: "default config with s3 env",
 			args: args{
-				configString: d.DefaultConfig,
+				configString: def.Config,
 				envs: []string{
 					"REGISTRY_STORAGE=s3",
 					"REGISTRY_STORAGE_S3_BUCKET=test-bucket",
