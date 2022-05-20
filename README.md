@@ -1,5 +1,5 @@
 # udistribution [![Go](https://github.com/kaovilai/udistribution/actions/workflows/go.yml/badge.svg)](https://github.com/kaovilai/udistribution/actions/workflows/go.yml) [![codecov](https://codecov.io/gh/kaovilai/udistribution/branch/main/graph/badge.svg?token=tmGT4hOtQb)](https://codecov.io/gh/kaovilai/udistribution) [![Go Report Card](https://goreportcard.com/badge/github.com/kaovilai/udistribution)](https://goreportcard.com/report/github.com/kaovilai/udistribution) [![License](https://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-Go library providing a client to interface with storage drivers of distribution/distribution without a serving HTTP server.
+Go library providing a client to interface with storage drivers of [distribution/distribution](https://github.com/distribution/distribution) without a serving HTTP server.
 
 Goal:
 - Given a config and/or environment variables conforming to [available configurations](https://docs.docker.com/registry/configuration/)
