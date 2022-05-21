@@ -32,7 +32,7 @@ type udistributionTransport struct{
 
 // Create new transport and register.
 // When you are done with this transport, use Deregister() to unregister it from available transports.
-func NewTransport(client *client.Client, name string) udistributionTransport {
+func NewTransport(client *client.Client, name string) *udistributionTransport {
 	t := udistributionTransport{
 		Client: client,
 		name:   name,
@@ -40,7 +40,24 @@ func NewTransport(client *client.Client, name string) udistributionTransport {
 	if transports.Get(t.Name()) == nil {
 		transports.Register(t)
 	}
-	return t
+	return &t
+}
+
+// Create new transport with client params and register.
+// When you are done with this transport, use Deregister() to unregister it from available transports.
+func NewTransportFromNewConfig(config string, env []string) (*udistributionTransport, error) {
+	c, err := client.NewClient(config,env)
+	if err != nil {
+		return nil, err
+	}
+	t := udistributionTransport{
+		Client: c,
+		name:   c.GetApp().Config.Storage.Type(),
+	}
+	if transports.Get(t.Name()) == nil {
+		transports.Register(t)
+	}
+	return &t, nil
 }
 
 func (u udistributionTransport) Deregister() {
@@ -108,7 +125,7 @@ func newReference(ref reference.Named) (udistributionReference, error) {
 		if err != nil {
 			return udistributionReference{}, err
 		}
-		return udistributionReference{udistributionTransport: NewTransport(c,"")}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
+		return udistributionReference{udistributionTransport: *NewTransport(c,"")}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
 	}
 
 	return udistributionReference{
