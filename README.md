@@ -5,7 +5,7 @@ Go library providing a client to interface with storage drivers of [distribution
 - Given a config and/or environment variables conforming to [available configurations](https://docs.docker.com/registry/configuration/)
   - a client interface can be initialized to access functions enabling access to methods in [distribution api spec](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#api) without a listening registry HTTP Server by exposing ServeHTTP method.
 
-Making it easier for Go programs to consume APIs on a needed basis without a constant listening server.
+Making it easier for Go programs to consume APIs on a needed basis without a listening server. This approach maybe more secure in an environment where it is not practical to obtain TLS certificates from a trusted certificate authorities, such as an unpredictable hostname/ip address.
 
 ## Getting Started
 Usage example as [seen in test](https://github.com/kaovilai/udistribution/blob/aa22efb91d74e7412c437eb618cc02f4ad46f28a/pkg/client/client_test.go#L73-L86)
