@@ -2,7 +2,9 @@ package client
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/distribution/distribution/v3/configuration"
@@ -72,6 +74,15 @@ func TestNewClient(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewClient() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+			rr := httptest.NewRecorder()
+			rq, err := http.NewRequest("GET", "/v2/", strings.NewReader(""))
+			if err != nil {
+				t.Fatal(err)
+			}
+			gotClient.GetApp().ServeHTTP(rr, rq)
+			if rr.Result().StatusCode != http.StatusOK {
+				t.Errorf("NewClient() = %v, want %v", rr.Result().StatusCode, http.StatusOK)
 			}
 			// TODO: compare app
 			tt.wantClient.app = gotClient.app
