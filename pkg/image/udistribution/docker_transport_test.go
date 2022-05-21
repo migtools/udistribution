@@ -16,17 +16,18 @@ const (
 	sha256digestHex = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 	sha256digest    = "@sha256:" + sha256digestHex
 )
+
 var (
-	testTransport types.ImageTransport
+	testTransport              types.ImageTransport
 	testUdistributionTransport udistributionTransport
 )
 
-func init () {
+func init() {
 	client, err := client.NewClient("", nil)
 	if err != nil {
 		panic(err)
 	}
-	testUdistributionTransport = *NewTransport(client,"testclient")
+	testUdistributionTransport = *NewTransport(client, "testclient")
 	testTransport = types.ImageTransport(testUdistributionTransport)
 }
 func TestTransportName(t *testing.T) {
@@ -36,7 +37,7 @@ func TestTransportName(t *testing.T) {
 func TestTransportParseReference(t *testing.T) {
 	client, err := client.NewClient("", nil)
 	require.NoError(t, err)
-	ut := NewTransport(client,"testclient")
+	ut := NewTransport(client, "testclient")
 	testParseReference(t, types.ImageTransport(ut).ParseReference)
 }
 

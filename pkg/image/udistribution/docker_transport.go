@@ -25,7 +25,7 @@ import (
 // Transport is an ImageTransport for container registry-hosted images.
 // var Transport = udistributionTransport{}
 
-type udistributionTransport struct{
+type udistributionTransport struct {
 	*client.Client
 	name string
 }
@@ -46,7 +46,7 @@ func NewTransport(client *client.Client, name string) *udistributionTransport {
 // Create new transport with client params and register.
 // When you are done with this transport, use Deregister() to unregister it from available transports.
 func NewTransportFromNewConfig(config string, env []string) (*udistributionTransport, error) {
-	c, err := client.NewClient(config,env)
+	c, err := client.NewClient(config, env)
 	if err != nil {
 		return nil, err
 	}
@@ -121,11 +121,11 @@ func newReference(ref reference.Named) (udistributionReference, error) {
 	_, isTagged := ref.(reference.NamedTagged)
 	_, isDigested := ref.(reference.Canonical)
 	if isTagged && isDigested {
-		c, err := client.NewClient("",os.Environ())
+		c, err := client.NewClient("", os.Environ())
 		if err != nil {
 			return udistributionReference{}, err
 		}
-		return udistributionReference{udistributionTransport: *NewTransport(c,"")}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
+		return udistributionReference{udistributionTransport: *NewTransport(c, "")}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
 	}
 
 	return udistributionReference{

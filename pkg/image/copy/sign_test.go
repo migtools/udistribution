@@ -23,6 +23,7 @@ const (
 	// Keep this in sync with signature/fixtures_info_test.go
 	testKeyFingerprint = "1D8230F6CDB6A06716E414C1DB72F2188BB46CC8"
 )
+
 // TODO:
 func PTestCreateSignature(t *testing.T) {
 	manifestBlob := []byte("Something")
