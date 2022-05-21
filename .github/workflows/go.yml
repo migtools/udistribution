@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: pre-req gpgme
+      run:  sudo apt-get install libgpgme11
 
     - name: Set up Go
       uses: actions/setup-go@v3
