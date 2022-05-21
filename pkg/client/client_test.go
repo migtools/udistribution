@@ -81,7 +81,7 @@ func TestNewClient(t *testing.T) {
 				t.Fatal(err)
 			}
 			gotClient.GetApp().ServeHTTP(rr, rq)
-			if rr.Result().StatusCode != http.StatusOK {
+			if rr.Result().StatusCode != http.StatusOK && !tt.wantErr {
 				t.Errorf("NewClient() = %v, want %v", rr.Result().StatusCode, http.StatusOK)
 			}
 			// TODO: compare app
