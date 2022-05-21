@@ -7,6 +7,14 @@ Go library providing a client to interface with storage drivers of [distribution
 
 Making it easier for Go programs to consume APIs on a needed basis without a listening server. This approach maybe more secure in an environment where it is not practical to obtain TLS certificates from a trusted certificate authorities, such as an unpredictable hostname/ip address.
 
+Current functionality:
+- [x] Initialize client with config string and/or environment variables
+- [x] ServeHTTP method can be accessed after initialization
+
+TODO:
+- [ ] implement [copy.Image()](https://github.com/containers/image/blob/3c83b65b71650f25c11d9b8585f304bd8299dd00/copy/copy.go#L186) function that copies an image from one running registry to use ServeHTTP from client in this library either here or in a separate library.
+- [ ] [oci_src](https://github.com/containers/image/blob/7152f888b90d2f3cd7a633246ceba30f5cd49cc3/oci/layout/oci_src.go), [oci_dest](https://github.com/containers/image/blob/7152f888b90d2f3cd7a633246ceba30f5cd49cc3/oci/layout/oci_dest.go) also need to be implemented.
+
 ## Getting Started
 Usage example as [seen in test](https://github.com/kaovilai/udistribution/blob/aa22efb91d74e7412c437eb618cc02f4ad46f28a/pkg/client/client_test.go#L73-L86)
 ```go
