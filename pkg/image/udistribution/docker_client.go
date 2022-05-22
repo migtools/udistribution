@@ -607,6 +607,10 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		c.ut.GetApp().ServeHTTP(rr, req)
 		res := rr.Result()
 		log.Println("useUdistributionHTTPServe-Status: " + res.Status)
+		loc, _ := res.Location()
+		if loc != nil {
+			log.Println("res location: " + loc.String())
+		}
 		return res, nil
 	} else {
 		log.Printf("c.client: %v", c.client)
