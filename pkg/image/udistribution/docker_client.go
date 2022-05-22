@@ -288,7 +288,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*udi
 	}
 
 	return &udistributionClient{
-		scheme: 	"https",
+		scheme:          "http",
 		sys:             sys,
 		registry:        registry,
 		userAgent:       userAgent,
@@ -542,10 +542,10 @@ func (c *udistributionClient) makeRequestToResolvedURL(ctx context.Context, meth
 // makeRequest should generally be preferred.
 // Note that no exponential back off is performed when receiving an http 429 status code.
 func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (res *http.Response, err error) {
-	log.Println("makeRequestToResolvedURLOnce: "+ url.String())
+	log.Println("makeRequestToResolvedURLOnce: " + url.String())
 	useUdistributionHTTPServe := false
 	var req *http.Request
-	if strings.Contains(url.String(), dockerRegistry) || url.Host == ""{
+	if strings.Contains(url.String(), dockerRegistry) || url.Host == "" {
 		log.Println("overriding to use udistribution ServeHTTP")
 		useUdistributionHTTPServe = true
 		// log.Println("current path: " + url.Path)
@@ -590,7 +590,7 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		rr := httptest.NewRecorder()
 		c.ut.GetApp().ServeHTTP(rr, req)
 		res := rr.Result()
-		log.Println("useUdistributionHTTPServe-Status: "+ res.Status)
+		log.Println("useUdistributionHTTPServe-Status: " + res.Status)
 		return res, nil
 	} else {
 		res, err = c.client.Do(req)

@@ -126,7 +126,7 @@ func newReference(ref reference.Named, ut *udistributionTransport) (udistributio
 		return udistributionReference{}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
 	}
 	return udistributionReference{
-		ref: ref,
+		ref:                    ref,
 		udistributionTransport: ut,
 	}, nil
 }

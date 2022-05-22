@@ -10,6 +10,7 @@ import (
 	"github.com/containers/image/v5/signature"
 	"github.com/containers/image/v5/types"
 	"github.com/kaovilai/udistribution/pkg/image/udistribution"
+	"github.com/pkg/errors"
 )
 
 /*
@@ -67,7 +68,7 @@ func TestE2e(t *testing.T) {
 		DestinationCtx: ctx,
 	})
 	if err != nil {
-		t.Errorf("failed to copy image: %v", err)
+		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
 	}
 }
 
@@ -81,7 +82,7 @@ func getDefaultContext() (*types.SystemContext, error) {
 		DockerDaemonInsecureSkipTLSVerify: true,
 		DockerInsecureSkipTLSVerify:       types.OptionalBoolTrue,
 		DockerDisableDestSchema1MIMETypes: true,
-		OSChoice: 						"linux",
+		OSChoice:                          "linux",
 	}
 	return ctx, nil
 }
