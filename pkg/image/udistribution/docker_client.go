@@ -227,7 +227,7 @@ func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference
 	}
 
 	registry := reference.Domain(ref.ref)
-	client, err := newDockerClient(sys, registry, ref.ref.Name())
+	client, err := newDockerClient(sys, registry, ref.ref.Name(), ref.udistributionTransport)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference
 // (e.g., "registry.com[:5000][/some/namespace]/repo").
 // Please note that newDockerClient does not set all members of udistributionClient
 // (e.g., username and password); those must be set by callers if necessary.
-func newDockerClient(sys *types.SystemContext, registry, reference string) (*udistributionClient, error) {
+func newDockerClient(sys *types.SystemContext, registry, reference string, ut *udistributionTransport) (*udistributionClient, error) {
 	hostName := registry
 	if registry == dockerHostname {
 		registry = dockerRegistry
@@ -293,13 +293,28 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*udi
 		registry:        registry,
 		userAgent:       userAgent,
 		tlsClientConfig: tlsClientConfig,
+		ut: ut,
 	}, nil
 }
 
 // CheckAuth validates the credentials by attempting to log into the registry
 // returns an error if an error occurred while making the http request or the status code received was 401
 func CheckAuth(ctx context.Context, sys *types.SystemContext, username, password, registry string) error {
-	client, err := newDockerClient(sys, registry, registry)
+	var (
+		ut *udistributionTransport
+		err error
+	) 
+	if username == "" && password == "" {
+		// try to test empty credentials
+		ut, err = NewTransportFromNewConfig("", nil)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Our transport do not support auth with user/password
+		return nil
+	}
+	client, err := newDockerClient(sys, registry, registry, ut)
 	if err != nil {
 		return errors.Wrapf(err, "creating new docker client")
 	}
@@ -362,7 +377,7 @@ func SearchRegistry(ctx context.Context, sys *types.SystemContext, registry, ima
 		hostname = dockerV1Hostname
 	}
 
-	client, err := newDockerClient(sys, hostname, registry)
+	client, err := newDockerClient(sys, hostname, registry, nil)
 	if err != nil {
 		return nil, errors.Wrapf(err, "creating new docker client")
 	}
@@ -543,9 +558,10 @@ func (c *udistributionClient) makeRequestToResolvedURL(ctx context.Context, meth
 // Note that no exponential back off is performed when receiving an http 429 status code.
 func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (res *http.Response, err error) {
 	log.Println("makeRequestToResolvedURLOnce: " + url.String())
+	log.Println("makeRequestToResolvedURLOnce-HOST: " + url.Host)
 	useUdistributionHTTPServe := false
 	var req *http.Request
-	if strings.Contains(url.String(), dockerRegistry) || url.Host == "" {
+	if strings.Contains(url.String(), dockerRegistry) || url.Host == "" || strings.Contains(url.Host, "127.0.0.1") {
 		log.Println("overriding to use udistribution ServeHTTP")
 		useUdistributionHTTPServe = true
 		// log.Println("current path: " + url.Path)
@@ -586,13 +602,14 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		req.Body = io.NopCloser(bytes.NewReader(nil))
 	}
 	logrus.Debugf("%s %s", method, url.Redacted())
-	if useUdistributionHTTPServe {
+	if c.ut != nil && useUdistributionHTTPServe {
 		rr := httptest.NewRecorder()
 		c.ut.GetApp().ServeHTTP(rr, req)
 		res := rr.Result()
 		log.Println("useUdistributionHTTPServe-Status: " + res.Status)
 		return res, nil
 	} else {
+		log.Printf("c.client: %v", c.client)
 		res, err = c.client.Do(req)
 	}
 	if err != nil {
@@ -765,73 +782,73 @@ func (c *udistributionClient) getBearerToken(ctx context.Context, challenge chal
 // detectPropertiesHelper performs the work of detectProperties which executes
 // it at most once.
 func (c *udistributionClient) detectPropertiesHelper(ctx context.Context) error {
-	// TODO: remove? this function can be called without transport initialized. We cannot accept random pings without a listening server.
-	return nil
+	// // TODO: remove? this function can be called without transport initialized. We cannot accept random pings without a listening server.
+	// return nil
 	// We overwrite the TLS clients `InsecureSkipVerify` only if explicitly
 	// specified by the system context
-	// if c.sys != nil && c.sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
-	// 	c.tlsClientConfig.InsecureSkipVerify = c.sys.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue
-	// }
-	// tr := tlsclientconfig.NewTransport()
-	// tr.TLSClientConfig = c.tlsClientConfig
-	// c.client = &http.Client{Transport: tr}
+	if c.sys != nil && c.sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
+		c.tlsClientConfig.InsecureSkipVerify = c.sys.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue
+	}
+	tr := tlsclientconfig.NewTransport()
+	tr.TLSClientConfig = c.tlsClientConfig
+	c.client = &http.Client{Transport: tr}
 
-	// ping := func(scheme string) error {
-	// 	url, err := url.Parse(fmt.Sprintf(resolvedPingV2URL, scheme, c.registry))
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
-	// 	if err != nil {
-	// 		logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
-	// 		return err
-	// 	}
-	// 	defer resp.Body.Close()
-	// 	logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
-	// 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
-	// 		return httpResponseToError(resp, "")
-	// 	}
-	// 	c.challenges = parseAuthHeader(resp.Header)
-	// 	c.scheme = scheme
-	// 	c.supportsSignatures = resp.Header.Get("X-Registry-Supports-Signatures") == "1"
-	// 	return nil
-	// }
-	// err := ping("https")
-	// if err != nil && c.tlsClientConfig.InsecureSkipVerify {
-	// 	err = ping("http")
-	// }
-	// if err != nil {
-	// 	err = errors.Wrapf(err, "pinging container registry %s", c.registry)
-	// 	if c.sys != nil && c.sys.DockerDisableV1Ping {
-	// 		return err
-	// 	}
-	// 	// best effort to understand if we're talking to a V1 registry
-	// 	pingV1 := func(scheme string) bool {
-	// 		url, err := url.Parse(fmt.Sprintf(resolvedPingV1URL, scheme, c.registry))
-	// 		if err != nil {
-	// 			return false
-	// 		}
-	// 		resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
-	// 		if err != nil {
-	// 			logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
-	// 			return false
-	// 		}
-	// 		defer resp.Body.Close()
-	// 		logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
-	// 		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
-	// 			return false
-	// 		}
-	// 		return true
-	// 	}
-	// 	isV1 := pingV1("https")
-	// 	if !isV1 && c.tlsClientConfig.InsecureSkipVerify {
-	// 		isV1 = pingV1("http")
-	// 	}
-	// 	if isV1 {
-	// 		err = ErrV1NotSupported
-	// 	}
-	// }
-	// return err
+	ping := func(scheme string) error {
+		url, err := url.Parse(fmt.Sprintf(resolvedPingV2URL, scheme, c.registry))
+		if err != nil {
+			return err
+		}
+		resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
+		if err != nil {
+			logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
+			return err
+		}
+		defer resp.Body.Close()
+		logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
+		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
+			return httpResponseToError(resp, "")
+		}
+		c.challenges = parseAuthHeader(resp.Header)
+		c.scheme = scheme
+		c.supportsSignatures = resp.Header.Get("X-Registry-Supports-Signatures") == "1"
+		return nil
+	}
+	err := ping("https")
+	if err != nil && c.tlsClientConfig.InsecureSkipVerify {
+		err = ping("http")
+	}
+	if err != nil {
+		err = errors.Wrapf(err, "pinging container registry %s", c.registry)
+		if c.sys != nil && c.sys.DockerDisableV1Ping {
+			return err
+		}
+		// best effort to understand if we're talking to a V1 registry
+		pingV1 := func(scheme string) bool {
+			url, err := url.Parse(fmt.Sprintf(resolvedPingV1URL, scheme, c.registry))
+			if err != nil {
+				return false
+			}
+			resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
+			if err != nil {
+				logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
+				return false
+			}
+			defer resp.Body.Close()
+			logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
+			if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
+				return false
+			}
+			return true
+		}
+		isV1 := pingV1("https")
+		if !isV1 && c.tlsClientConfig.InsecureSkipVerify {
+			isV1 = pingV1("http")
+		}
+		if isV1 {
+			err = ErrV1NotSupported
+		}
+	}
+	return err
 }
 
 // detectProperties detects various properties of the registry.

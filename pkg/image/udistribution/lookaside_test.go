@@ -13,7 +13,7 @@ import (
 )
 
 func dockerRefFromString(t *testing.T, s string) udistributionReference {
-	ref, err := ParseReference(s)
+	ref, err := ParseReference(s, &testUdistributionTransport)
 	require.NoError(t, err, s)
 	dockerRef, ok := ref.(udistributionReference)
 	require.True(t, ok, s)

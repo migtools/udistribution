@@ -54,10 +54,10 @@ func TestTransportValidatePolicyConfigurationScope(t *testing.T) {
 		assert.NoError(t, err, scope)
 	}
 }
-
-func TestParseReference(t *testing.T) {
-	testParseReference(t, ParseReference)
-}
+// Parse Reference is expected to be incompatible because it isn't meant to be used externally without udistributionTransport initialized.
+// func TestParseReference(t *testing.T) {
+// 	testParseReference(t, ParseReference)
+// }
 
 // testParseReference is a test shared for Transport.ParseReference and ParseReference.
 func testParseReference(t *testing.T, fn func(string) (types.ImageReference, error)) {
@@ -97,7 +97,7 @@ func TestNewReference(t *testing.T) {
 	for _, c := range validReferenceTestCases {
 		parsed, err := reference.ParseNormalizedNamed(c.input)
 		require.NoError(t, err)
-		ref, err := NewReference(parsed)
+		ref, err := NewReference(parsed, &testUdistributionTransport)
 		require.NoError(t, err, c.input)
 		dockerRef, ok := ref.(udistributionReference)
 		require.True(t, ok, c.input)
@@ -107,7 +107,7 @@ func TestNewReference(t *testing.T) {
 	// Neither a tag nor digest
 	parsed, err := reference.ParseNormalizedNamed("busybox")
 	require.NoError(t, err)
-	_, err = NewReference(parsed)
+	_, err = NewReference(parsed, &testUdistributionTransport)
 	assert.Error(t, err)
 
 	// A github.com/distribution/reference value can have a tag and a digest at the same time!
@@ -117,13 +117,13 @@ func TestNewReference(t *testing.T) {
 	require.True(t, ok)
 	_, ok = parsed.(reference.NamedTagged)
 	require.True(t, ok)
-	_, err = NewReference(parsed)
+	_, err = NewReference(parsed, &testUdistributionTransport)
 	assert.Error(t, err)
 }
 
 // TODO:
 // func TestReferenceTransport(t *testing.T) {
-// 	ref, err := ParseReference("//busybox")
+// 	ref, err := ParseReference("//busybox", &testUdistributionTransport)
 // 	require.NoError(t, err)
 // 	defaultTransport, err := NewTransportFromNewConfig("",nil)
 // 	require.NoError(t, err)
@@ -132,7 +132,7 @@ func TestNewReference(t *testing.T) {
 
 func TestReferenceStringWithinTransport(t *testing.T) {
 	for _, c := range validReferenceTestCases {
-		ref, err := ParseReference("//" + c.input)
+		ref, err := ParseReference("//" + c.input, &testUdistributionTransport)
 		require.NoError(t, err, c.input)
 		stringRef := ref.StringWithinTransport()
 		assert.Equal(t, c.stringWithinTransport, stringRef, c.input)
@@ -146,7 +146,7 @@ func TestReferenceStringWithinTransport(t *testing.T) {
 
 func TestReferenceDockerReference(t *testing.T) {
 	for _, c := range validReferenceTestCases {
-		ref, err := ParseReference("//" + c.input)
+		ref, err := ParseReference("//" + c.input, &testUdistributionTransport)
 		require.NoError(t, err, c.input)
 		dockerRef := ref.DockerReference()
 		require.NotNil(t, dockerRef, c.input)
@@ -156,14 +156,14 @@ func TestReferenceDockerReference(t *testing.T) {
 
 func TestReferencePolicyConfigurationIdentity(t *testing.T) {
 	// Just a smoke test, the substance is tested in policyconfiguration.TestDockerReference.
-	ref, err := ParseReference("//busybox")
+	ref, err := ParseReference("//busybox", &testUdistributionTransport)
 	require.NoError(t, err)
 	assert.Equal(t, "docker.io/library/busybox:latest", ref.PolicyConfigurationIdentity())
 }
 
 func TestReferencePolicyConfigurationNamespaces(t *testing.T) {
 	// Just a smoke test, the substance is tested in policyconfiguration.TestDockerReference.
-	ref, err := ParseReference("//busybox")
+	ref, err := ParseReference("//busybox", &testUdistributionTransport)
 	require.NoError(t, err)
 	assert.Equal(t, []string{
 		"docker.io/library/busybox",
@@ -174,7 +174,7 @@ func TestReferencePolicyConfigurationNamespaces(t *testing.T) {
 }
 
 func TestReferenceNewImage(t *testing.T) {
-	ref, err := ParseReference("//quay.io/libpod/busybox")
+	ref, err := ParseReference("//quay.io/libpod/busybox", &testUdistributionTransport)
 	require.NoError(t, err)
 	img, err := ref.NewImage(context.Background(), &types.SystemContext{
 		RegistriesDirPath:        "/this/does/not/exist",
@@ -187,7 +187,7 @@ func TestReferenceNewImage(t *testing.T) {
 }
 
 func TestReferenceNewImageSource(t *testing.T) {
-	ref, err := ParseReference("//quay.io/libpod/busybox")
+	ref, err := ParseReference("//quay.io/libpod/busybox", &testUdistributionTransport)
 	require.NoError(t, err)
 	src, err := ref.NewImageSource(context.Background(),
 		&types.SystemContext{RegistriesDirPath: "/this/does/not/exist", DockerPerHostCertDirPath: "/this/does/not/exist"})
@@ -196,7 +196,7 @@ func TestReferenceNewImageSource(t *testing.T) {
 }
 
 func TestReferenceNewImageDestination(t *testing.T) {
-	ref, err := ParseReference("//quay.io/libpod/busybox")
+	ref, err := ParseReference("//quay.io/libpod/busybox", &testUdistributionTransport)
 	require.NoError(t, err)
 	dest, err := ref.NewImageDestination(context.Background(),
 		&types.SystemContext{RegistriesDirPath: "/this/does/not/exist", DockerPerHostCertDirPath: "/this/does/not/exist"})
@@ -209,7 +209,7 @@ func TestReferenceTagOrDigest(t *testing.T) {
 		"//busybox:notlatest":      "notlatest",
 		"//busybox" + sha256digest: "sha256:" + sha256digestHex,
 	} {
-		ref, err := ParseReference(input)
+		ref, err := ParseReference(input, &testUdistributionTransport)
 		require.NoError(t, err, input)
 		dockerRef, ok := ref.(udistributionReference)
 		require.True(t, ok, input)
