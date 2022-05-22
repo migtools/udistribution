@@ -50,7 +50,7 @@ func TestE2e(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to parse reference: %v", err)
 	}
-	destRef, err := ut.ParseReference("//quay.io/konveyor/oadp-must-gather:latest")
+	destRef, err := ut.ParseReference("//alpine")
 	if err != nil {
 		t.Errorf("failed to parse reference: %v", err)
 	}
@@ -81,6 +81,7 @@ func getDefaultContext() (*types.SystemContext, error) {
 		DockerDaemonInsecureSkipTLSVerify: true,
 		DockerInsecureSkipTLSVerify:       types.OptionalBoolTrue,
 		DockerDisableDestSchema1MIMETypes: true,
+		OSChoice: 						"linux",
 	}
 	return ctx, nil
 }
