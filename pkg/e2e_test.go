@@ -26,6 +26,7 @@ Note: This test will likely fail on macos due to lack of darwin container images
 udistribution/pkg/e2e_test.go:63: failed to copy image: choosing an image from manifest list docker://alpine:latest: no image found in manifest list for architecture amd64, variant "", OS darwin
 */
 func TestE2e(t *testing.T) {
+	t.Logf("TestE2e called")
 	// Set test environment variables when running in IDE.
 	// os.Setenv("UDISTRIBUTION_TEST_E2E_ENABLE", "true")
 	// os.Setenv("REGISTRY_STORAGE", "s3")
@@ -40,7 +41,7 @@ func TestE2e(t *testing.T) {
 	if os.Getenv("REGISTRY_STORAGE") == "" {
 		t.Skip("REGISTRY_STORAGE not set, skipping e2e test")
 	}
-	ut, err := udistribution.NewTransportFromNewConfig("",os.Environ())
+	ut, err := udistribution.NewTransportFromNewConfig("", os.Environ())
 	defer ut.Deregister()
 	if err != nil {
 		t.Errorf("failed to create transport with environment variables: %v", err)
@@ -62,8 +63,8 @@ func TestE2e(t *testing.T) {
 		t.Errorf("failed to get default context: %v", err)
 	}
 	_, err = copy.Image(context.Background(), pc, destRef, srcRef, &copy.Options{
-		SourceCtx: ctx,
-		DestinationCtx:   ctx,
+		SourceCtx:      ctx,
+		DestinationCtx: ctx,
 	})
 	if err != nil {
 		t.Errorf("failed to copy image: %v", err)

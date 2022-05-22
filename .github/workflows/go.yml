@@ -3,9 +3,6 @@ name: Go
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
 
   build:
@@ -24,7 +21,17 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -v ./... -coverprofile cover.out
+      run: |
+        # enable e2e
+        export UDISTRIBUTION_TEST_E2E_ENABLE=${{ secrets.UDISTRIBUTION_TEST_E2E_ENABLE }}
+        # set env vars from secrets
+        export REGISTRY_STORAGE=${{ secrets.REGISTRY_STORAGE }}
+        export REGISTRY_STORAGE_S3_BUCKET=${{ secrets.REGISTRY_STORAGE_S3_BUCKET }}
+        export REGISTRY_STORAGE_S3_ACCESSKEY=${{ secrets.REGISTRY_STORAGE_S3_ACCESSKEY }}
+        export REGISTRY_STORAGE_S3_SECRETKEY=${{ secrets.REGISTRY_STORAGE_S3_SECRETKEY }}
+        export REGISTRY_STORAGE_S3_REGION=${{ secrets.REGISTRY_STORAGE_S3_REGION }}
+        # start tests
+        go test -v ./... -coverprofile cover.out
     - uses: codecov/codecov-action@v2
   format:
     needs: [build]
