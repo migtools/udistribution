@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 
 	// "github.com/distribution/distribution/v3/registry/storage/driver/factory"
@@ -42,6 +43,7 @@ func NewClient(configString string, envs []string) (client *Client, err error) {
 	if err != nil {
 		return nil, err
 	}
+	configureSecret(config)
 	ctx, err := GetContext(config)
 	if err != nil {
 		return nil, err
@@ -67,6 +69,21 @@ func NewClient(configString string, envs []string) (client *Client, err error) {
 	// if err != nil {
 	// 	fmt.Fprintf(os.Stderr, "failed to construct %s driver: %v", config.Storage.Type(), err)
 	// }
+}
+// randomSecretSize is the number of random bytes to generate if no secret
+// was specified.
+const randomSecretSize = 32
+
+// configureSecret creates a random secret if a secret wasn't included in the
+// configuration.
+func configureSecret(configuration *configuration.Configuration) {
+	if configuration.HTTP.Secret == "" {
+		var secretBytes [randomSecretSize]byte
+		if _, err := rand.Read(secretBytes[:]); err != nil {
+			panic(fmt.Sprintf("could not generate random bytes for HTTP secret: %v", err))
+		}
+		configuration.HTTP.Secret = string(secretBytes[:])
+	}
 }
 
 func (c *Client) GetApp() *handlers.App {
