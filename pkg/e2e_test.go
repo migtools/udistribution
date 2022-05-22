@@ -47,11 +47,11 @@ func TestE2e(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to create transport with environment variables: %v", err)
 	}
-	srcRef, err := docker.ParseReference("//alpine")
+	srcRef, err := docker.ParseReference("//quay.io/konveyor/openshift-velero-plugin:latest")
 	if err != nil {
 		t.Errorf("failed to parse reference: %v", err)
 	}
-	destRef, err := ut.ParseReference("//alpine")
+	destRef, err := ut.ParseReference("//openshift-velero-plugin:latest")
 	if err != nil {
 		t.Errorf("failed to parse reference: %v", err)
 	}
