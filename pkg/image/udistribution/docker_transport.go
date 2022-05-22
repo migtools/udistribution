@@ -3,7 +3,6 @@ package udistribution
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/containers/image/v5/docker/policyconfiguration"
@@ -70,7 +69,7 @@ func (t udistributionTransport) Name() string {
 
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an ImageReference.
 func (t udistributionTransport) ParseReference(reference string) (types.ImageReference, error) {
-	return ParseReference(reference)
+	return ParseReference(reference, &t)
 }
 
 // ValidatePolicyConfigurationScope checks that scope is a valid name for a signature.PolicyTransportScopes keys
@@ -87,11 +86,11 @@ func (t udistributionTransport) ValidatePolicyConfigurationScope(scope string) e
 // udistributionReference is an ImageReference for Docker images.
 type udistributionReference struct {
 	ref reference.Named // By construction we know that !reference.IsNameOnly(ref)
-	udistributionTransport
+	*udistributionTransport
 }
 
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an Docker ImageReference.
-func ParseReference(refString string) (types.ImageReference, error) {
+func ParseReference(refString string, ut *udistributionTransport) (types.ImageReference, error) {
 	if !strings.HasPrefix(refString, "//") {
 		return nil, errors.Errorf("docker: image reference %s does not start with //", refString)
 	}
@@ -100,16 +99,19 @@ func ParseReference(refString string) (types.ImageReference, error) {
 		return nil, err
 	}
 	ref = reference.TagNameOnly(ref)
-	return NewReference(ref)
+	return NewReference(ref, ut)
 }
 
 // NewReference returns a Docker reference for a named reference. The reference must satisfy !reference.IsNameOnly().
-func NewReference(ref reference.Named) (types.ImageReference, error) {
-	return newReference(ref)
+func NewReference(ref reference.Named, ut *udistributionTransport) (types.ImageReference, error) {
+	return newReference(ref, ut)
 }
 
 // newReference returns a udistributionReference for a named reference.
-func newReference(ref reference.Named) (udistributionReference, error) {
+func newReference(ref reference.Named, ut *udistributionTransport) (udistributionReference, error) {
+	if ut == nil {
+		return udistributionReference{}, errors.Errorf("image reference is invalid: missing transport")
+	}
 	if reference.IsNameOnly(ref) {
 		return udistributionReference{}, errors.Errorf("Docker reference %s has neither a tag nor a digest", reference.FamiliarString(ref))
 	}
@@ -121,15 +123,11 @@ func newReference(ref reference.Named) (udistributionReference, error) {
 	_, isTagged := ref.(reference.NamedTagged)
 	_, isDigested := ref.(reference.Canonical)
 	if isTagged && isDigested {
-		c, err := client.NewClient("", os.Environ())
-		if err != nil {
-			return udistributionReference{}, err
-		}
-		return udistributionReference{udistributionTransport: *NewTransport(c, "")}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
+		return udistributionReference{}, errors.Errorf("Docker references with both a tag and digest are currently not supported")
 	}
-
 	return udistributionReference{
 		ref: ref,
+		udistributionTransport: ut,
 	}, nil
 }
 

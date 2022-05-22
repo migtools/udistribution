@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -90,12 +92,14 @@ type bearerToken struct {
 	expirationTime time.Time
 }
 
-// dockerClient is configuration for dealing with a single container registry.
-type dockerClient struct {
+// udistributionClient is configuration for dealing with a single container registry.
+type udistributionClient struct {
 	// The following members are set by newDockerClient and do not change afterwards.
 	sys       *types.SystemContext
 	registry  string
 	userAgent string
+
+	ut udistributionTransport
 
 	// tlsClientConfig is setup by newDockerClient and will be used and updated
 	// by detectProperties(). Callers can edit tlsClientConfig.InsecureSkipVerify in the meantime.
@@ -207,10 +211,10 @@ func dockerCertDir(sys *types.SystemContext, hostPort string) (string, error) {
 	return fullCertDirPath, nil
 }
 
-// newDockerClientFromRef returns a new dockerClient instance for refHostname (a host a specified in the Docker image reference, not canonicalized to dockerRegistry)
+// newDockerClientFromRef returns a new udistributionClient instance for refHostname (a host a specified in the Docker image reference, not canonicalized to dockerRegistry)
 // “write” specifies whether the client will be used for "write" access (in particular passed to lookaside.go:toplevelFromSection)
 // signatureBase is always set in the return value
-func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference, write bool, actions string) (*dockerClient, error) {
+func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference, write bool, actions string) (*udistributionClient, error) {
 	auth, err := config.GetCredentialsForRef(sys, ref.ref)
 	if err != nil {
 		return nil, errors.Wrapf(err, "getting username and password")
@@ -236,13 +240,13 @@ func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference
 	return client, nil
 }
 
-// newDockerClient returns a new dockerClient instance for the given registry
+// newDockerClient returns a new udistributionClient instance for the given registry
 // and reference.  The reference is used to query the registry configuration
 // and can either be a registry (e.g, "registry.com[:5000]"), a repository
 // (e.g., "registry.com[:5000][/some/namespace]/repo").
-// Please note that newDockerClient does not set all members of dockerClient
+// Please note that newDockerClient does not set all members of udistributionClient
 // (e.g., username and password); those must be set by callers if necessary.
-func newDockerClient(sys *types.SystemContext, registry, reference string) (*dockerClient, error) {
+func newDockerClient(sys *types.SystemContext, registry, reference string) (*udistributionClient, error) {
 	hostName := registry
 	if registry == dockerHostname {
 		registry = dockerRegistry
@@ -282,7 +286,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*doc
 		userAgent = sys.DockerRegistryUserAgent
 	}
 
-	return &dockerClient{
+	return &udistributionClient{
 		sys:             sys,
 		registry:        registry,
 		userAgent:       userAgent,
@@ -456,7 +460,7 @@ func SearchRegistry(ctx context.Context, sys *types.SystemContext, registry, ima
 
 // makeRequest creates and executes a http.Request with the specified parameters, adding authentication and TLS options for the Docker client.
 // The host name and schema is taken from the client or autodetected, and the path is relative to it, i.e. the path usually starts with /v2/.
-func (c *dockerClient) makeRequest(ctx context.Context, method, path string, headers map[string][]string, stream io.Reader, auth sendAuth, extraScope *authScope) (*http.Response, error) {
+func (c *udistributionClient) makeRequest(ctx context.Context, method, path string, headers map[string][]string, stream io.Reader, auth sendAuth, extraScope *authScope) (*http.Response, error) {
 	if err := c.detectProperties(ctx); err != nil {
 		return nil, err
 	}
@@ -502,7 +506,7 @@ func parseRetryAfter(res *http.Response, fallbackDelay time.Duration) time.Durat
 // makeRequest should generally be preferred.
 // In case of an HTTP 429 status code in the response, it may automatically retry a few times.
 // TODO(runcom): too many arguments here, use a struct
-func (c *dockerClient) makeRequestToResolvedURL(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (*http.Response, error) {
+func (c *udistributionClient) makeRequestToResolvedURL(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (*http.Response, error) {
 	delay := backoffInitialDelay
 	attempts := 0
 	for {
@@ -535,10 +539,30 @@ func (c *dockerClient) makeRequestToResolvedURL(ctx context.Context, method stri
 // streamLen, if not -1, specifies the length of the data expected on stream.
 // makeRequest should generally be preferred.
 // Note that no exponential back off is performed when receiving an http 429 status code.
-func (c *dockerClient) makeRequestToResolvedURLOnce(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, method, url.String(), stream)
-	if err != nil {
-		return nil, err
+func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (res *http.Response, err error) {
+	log.Println("makeRequestToResolvedURLOnce: "+ url.String())
+	useUdistributionHTTPServe := false
+	var req *http.Request
+	if strings.Contains(url.String(), dockerRegistry) {
+		log.Println("overriding to use udistribution ServeHTTP")
+		useUdistributionHTTPServe = true
+		// log.Println("current path: " + url.Path)
+		// log.Println("removing Scheme: " + url.)
+		// url.Scheme = ""
+		// log.Println("removing host: " + url.Host)
+		// url.Host = ""
+		// log.Println("new url string: "+ url.String())
+		// url.Path = strings.SplitAfterN(url.String(),dockerRegistry,2)[1]
+		// log.Println("new path: " + url.Path)
+		req, err = http.NewRequestWithContext(ctx, method, url.Path, stream)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		req, err = http.NewRequestWithContext(ctx, method, url.String(), stream)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if streamLen != -1 { // Do not blindly overwrite if streamLen == -1, http.NewRequestWithContext above can figure out the length of bytes.Reader and similar objects without us having to compute it.
 		req.ContentLength = streamLen
@@ -556,7 +580,16 @@ func (c *dockerClient) makeRequestToResolvedURLOnce(ctx context.Context, method 
 		}
 	}
 	logrus.Debugf("%s %s", method, url.Redacted())
-	res, err := c.client.Do(req)
+	if useUdistributionHTTPServe {
+		rr := httptest.NewRecorder()
+		c.ut.GetApp().ServeHTTP(rr, req)
+		res := rr.Result()
+		log.Println("useUdistributionHTTPServe-Status: "+ res.Status)
+		defer res.Body.Close()
+		return res, nil
+	} else {
+		res, err = c.client.Do(req)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -570,7 +603,7 @@ func (c *dockerClient) makeRequestToResolvedURLOnce(ctx context.Context, method 
 // 2) gcr.io is sending 401 without a WWW-Authenticate header in the real request
 //
 // debugging: https://github.com/containers/image/pull/211#issuecomment-273426236 and follows up
-func (c *dockerClient) setupRequestAuth(req *http.Request, extraScope *authScope) error {
+func (c *udistributionClient) setupRequestAuth(req *http.Request, extraScope *authScope) error {
 	if len(c.challenges) == 0 {
 		return nil
 	}
@@ -625,7 +658,7 @@ func (c *dockerClient) setupRequestAuth(req *http.Request, extraScope *authScope
 	return nil
 }
 
-func (c *dockerClient) getBearerTokenOAuth2(ctx context.Context, challenge challenge,
+func (c *udistributionClient) getBearerTokenOAuth2(ctx context.Context, challenge challenge,
 	scopes []authScope) (*bearerToken, error) {
 	realm, ok := challenge.Parameters["realm"]
 	if !ok {
@@ -673,7 +706,7 @@ func (c *dockerClient) getBearerTokenOAuth2(ctx context.Context, challenge chall
 	return newBearerTokenFromJSONBlob(tokenBlob)
 }
 
-func (c *dockerClient) getBearerToken(ctx context.Context, challenge challenge,
+func (c *udistributionClient) getBearerToken(ctx context.Context, challenge challenge,
 	scopes []authScope) (*bearerToken, error) {
 	realm, ok := challenge.Parameters["realm"]
 	if !ok {
@@ -726,84 +759,86 @@ func (c *dockerClient) getBearerToken(ctx context.Context, challenge challenge,
 
 // detectPropertiesHelper performs the work of detectProperties which executes
 // it at most once.
-func (c *dockerClient) detectPropertiesHelper(ctx context.Context) error {
+func (c *udistributionClient) detectPropertiesHelper(ctx context.Context) error {
+	// TODO: remove? this function can be called without transport initialized. We cannot accept random pings without a listening server.
+	return nil
 	// We overwrite the TLS clients `InsecureSkipVerify` only if explicitly
 	// specified by the system context
-	if c.sys != nil && c.sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
-		c.tlsClientConfig.InsecureSkipVerify = c.sys.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue
-	}
-	tr := tlsclientconfig.NewTransport()
-	tr.TLSClientConfig = c.tlsClientConfig
-	c.client = &http.Client{Transport: tr}
+	// if c.sys != nil && c.sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
+	// 	c.tlsClientConfig.InsecureSkipVerify = c.sys.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue
+	// }
+	// tr := tlsclientconfig.NewTransport()
+	// tr.TLSClientConfig = c.tlsClientConfig
+	// c.client = &http.Client{Transport: tr}
 
-	ping := func(scheme string) error {
-		url, err := url.Parse(fmt.Sprintf(resolvedPingV2URL, scheme, c.registry))
-		if err != nil {
-			return err
-		}
-		resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
-		if err != nil {
-			logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
-			return err
-		}
-		defer resp.Body.Close()
-		logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
-		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
-			return httpResponseToError(resp, "")
-		}
-		c.challenges = parseAuthHeader(resp.Header)
-		c.scheme = scheme
-		c.supportsSignatures = resp.Header.Get("X-Registry-Supports-Signatures") == "1"
-		return nil
-	}
-	err := ping("https")
-	if err != nil && c.tlsClientConfig.InsecureSkipVerify {
-		err = ping("http")
-	}
-	if err != nil {
-		err = errors.Wrapf(err, "pinging container registry %s", c.registry)
-		if c.sys != nil && c.sys.DockerDisableV1Ping {
-			return err
-		}
-		// best effort to understand if we're talking to a V1 registry
-		pingV1 := func(scheme string) bool {
-			url, err := url.Parse(fmt.Sprintf(resolvedPingV1URL, scheme, c.registry))
-			if err != nil {
-				return false
-			}
-			resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
-			if err != nil {
-				logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
-				return false
-			}
-			defer resp.Body.Close()
-			logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
-			if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
-				return false
-			}
-			return true
-		}
-		isV1 := pingV1("https")
-		if !isV1 && c.tlsClientConfig.InsecureSkipVerify {
-			isV1 = pingV1("http")
-		}
-		if isV1 {
-			err = ErrV1NotSupported
-		}
-	}
-	return err
+	// ping := func(scheme string) error {
+	// 	url, err := url.Parse(fmt.Sprintf(resolvedPingV2URL, scheme, c.registry))
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
+	// 	if err != nil {
+	// 		logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
+	// 		return err
+	// 	}
+	// 	defer resp.Body.Close()
+	// 	logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
+	// 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
+	// 		return httpResponseToError(resp, "")
+	// 	}
+	// 	c.challenges = parseAuthHeader(resp.Header)
+	// 	c.scheme = scheme
+	// 	c.supportsSignatures = resp.Header.Get("X-Registry-Supports-Signatures") == "1"
+	// 	return nil
+	// }
+	// err := ping("https")
+	// if err != nil && c.tlsClientConfig.InsecureSkipVerify {
+	// 	err = ping("http")
+	// }
+	// if err != nil {
+	// 	err = errors.Wrapf(err, "pinging container registry %s", c.registry)
+	// 	if c.sys != nil && c.sys.DockerDisableV1Ping {
+	// 		return err
+	// 	}
+	// 	// best effort to understand if we're talking to a V1 registry
+	// 	pingV1 := func(scheme string) bool {
+	// 		url, err := url.Parse(fmt.Sprintf(resolvedPingV1URL, scheme, c.registry))
+	// 		if err != nil {
+	// 			return false
+	// 		}
+	// 		resp, err := c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
+	// 		if err != nil {
+	// 			logrus.Debugf("Ping %s err %s (%#v)", url.Redacted(), err.Error(), err)
+	// 			return false
+	// 		}
+	// 		defer resp.Body.Close()
+	// 		logrus.Debugf("Ping %s status %d", url.Redacted(), resp.StatusCode)
+	// 		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
+	// 			return false
+	// 		}
+	// 		return true
+	// 	}
+	// 	isV1 := pingV1("https")
+	// 	if !isV1 && c.tlsClientConfig.InsecureSkipVerify {
+	// 		isV1 = pingV1("http")
+	// 	}
+	// 	if isV1 {
+	// 		err = ErrV1NotSupported
+	// 	}
+	// }
+	// return err
 }
 
 // detectProperties detects various properties of the registry.
-// See the dockerClient documentation for members which are affected by this.
-func (c *dockerClient) detectProperties(ctx context.Context) error {
+// See the udistributionClient documentation for members which are affected by this.
+func (c *udistributionClient) detectProperties(ctx context.Context) error {
 	c.detectPropertiesOnce.Do(func() { c.detectPropertiesError = c.detectPropertiesHelper(ctx) })
 	return c.detectPropertiesError
 }
 
 // getExtensionsSignatures returns signatures from the X-Registry-Supports-Signatures API extension,
 // using the original data structures.
-func (c *dockerClient) getExtensionsSignatures(ctx context.Context, ref udistributionReference, manifestDigest digest.Digest) (*extensionSignatureList, error) {
+func (c *udistributionClient) getExtensionsSignatures(ctx context.Context, ref udistributionReference, manifestDigest digest.Digest) (*extensionSignatureList, error) {
 	path := fmt.Sprintf(extensionsSignaturePath, reference.Path(ref.ref), manifestDigest)
 	res, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil, v2Auth, nil)
 	if err != nil {

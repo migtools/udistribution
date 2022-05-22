@@ -34,7 +34,7 @@ import (
 
 type dockerImageDestination struct {
 	ref udistributionReference
-	c   *dockerClient
+	c   *udistributionClient
 	// State
 	manifestDigest digest.Digest // or "" if not yet known.
 }
@@ -569,7 +569,7 @@ func (d *dockerImageDestination) putSignaturesToLookaside(signatures [][]byte, m
 	// Remove any other signatures, if present.
 	// We stop at the first missing signature; if a previous deleting loop aborted
 	// prematurely, this may not clean up all of them, but one missing signature
-	// is enough for dockerImageSource to stop looking for other signatures, so that
+	// is enough for udistributionImageSource to stop looking for other signatures, so that
 	// is sufficient.
 	for i := len(signatures); ; i++ {
 		url := signatureStorageURL(d.c.signatureBase, manifestDigest, i)
@@ -611,7 +611,7 @@ func (d *dockerImageDestination) putOneSignature(url *url.URL, signature []byte)
 // deleteOneSignature deletes a signature from url, if it exists.
 // If it successfully determines that the signature does not exist, returns (true, nil)
 // NOTE: Keep this in sync with docs/signature-protocols.md!
-func (c *dockerClient) deleteOneSignature(url *url.URL) (missing bool, err error) {
+func (c *udistributionClient) deleteOneSignature(url *url.URL) (missing bool, err error) {
 	switch url.Scheme {
 	case "file":
 		logrus.Debugf("Deleting %s", url.Path)

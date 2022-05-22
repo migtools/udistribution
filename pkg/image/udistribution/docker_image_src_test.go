@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var _ private.ImageSource = (*dockerImageSource)(nil)
+var _ private.ImageSource = (*udistributionImageSource)(nil)
 
 func TestDockerImageSourceReference(t *testing.T) {
 	manifestPathRegex := regexp.MustCompile("^/v2/.*/manifests/latest$")
@@ -76,7 +76,7 @@ location = "@REGISTRY@/with-mirror"
 		assert.Equal(t, "//"+c.input, src.Reference().StringWithinTransport(), c.input)
 		assert.Equal(t, ref.StringWithinTransport(), src.Reference().StringWithinTransport(), c.input)
 		// Also peek into internal state
-		src2, ok := src.(*dockerImageSource)
+		src2, ok := src.(*udistributionImageSource)
 		require.True(t, ok, c.input)
 		assert.Equal(t, "//"+c.input, src2.logicalRef.StringWithinTransport(), c.input)
 		assert.Equal(t, "//"+c.physical, src2.physicalRef.StringWithinTransport(), c.input)
