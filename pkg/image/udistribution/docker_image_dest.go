@@ -231,6 +231,9 @@ func (d *dockerImageDestination) PutBlob(ctx context.Context, stream io.Reader, 
 func (d *dockerImageDestination) blobExists(ctx context.Context, repo reference.Named, digest digest.Digest, extraScope *authScope) (bool, int64, error) {
 	checkPath := fmt.Sprintf(blobsPath, reference.Path(repo), digest.String())
 	logrus.Debugf("Checking %s", checkPath)
+	if d.c.ut == nil || d.c.ut.Client == nil {
+		d.c.ut = d.ref.udistributionTransport
+	}
 	res, err := d.c.makeRequest(ctx, http.MethodHead, checkPath, nil, nil, v2Auth, extraScope)
 	if err != nil {
 		return false, -1, err

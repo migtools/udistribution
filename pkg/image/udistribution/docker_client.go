@@ -1,6 +1,7 @@
 package udistribution
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -99,7 +100,7 @@ type udistributionClient struct {
 	registry  string
 	userAgent string
 
-	ut udistributionTransport
+	ut *udistributionTransport
 
 	// tlsClientConfig is setup by newDockerClient and will be used and updated
 	// by detectProperties(). Callers can edit tlsClientConfig.InsecureSkipVerify in the meantime.
@@ -287,6 +288,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*udi
 	}
 
 	return &udistributionClient{
+		scheme: 	"https",
 		sys:             sys,
 		registry:        registry,
 		userAgent:       userAgent,
@@ -543,7 +545,7 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 	log.Println("makeRequestToResolvedURLOnce: "+ url.String())
 	useUdistributionHTTPServe := false
 	var req *http.Request
-	if strings.Contains(url.String(), dockerRegistry) {
+	if strings.Contains(url.String(), dockerRegistry) || url.Host == ""{
 		log.Println("overriding to use udistribution ServeHTTP")
 		useUdistributionHTTPServe = true
 		// log.Println("current path: " + url.Path)
@@ -579,13 +581,16 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 			return nil, err
 		}
 	}
+	// ServeHTTP requires a non-nil body to call close on it.
+	if req.Body == nil {
+		req.Body = io.NopCloser(bytes.NewReader(nil))
+	}
 	logrus.Debugf("%s %s", method, url.Redacted())
 	if useUdistributionHTTPServe {
 		rr := httptest.NewRecorder()
 		c.ut.GetApp().ServeHTTP(rr, req)
 		res := rr.Result()
 		log.Println("useUdistributionHTTPServe-Status: "+ res.Status)
-		defer res.Body.Close()
 		return res, nil
 	} else {
 		res, err = c.client.Do(req)
