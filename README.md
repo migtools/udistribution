@@ -16,22 +16,36 @@ TODO:
 - [ ] [oci_src](https://github.com/containers/image/blob/7152f888b90d2f3cd7a633246ceba30f5cd49cc3/oci/layout/oci_src.go), [oci_dest](https://github.com/containers/image/blob/7152f888b90d2f3cd7a633246ceba30f5cd49cc3/oci/layout/oci_dest.go) also need to be implemented.
 
 ## Getting Started
-Usage example as [seen in test](https://github.com/kaovilai/udistribution/blob/aa22efb91d74e7412c437eb618cc02f4ad46f28a/pkg/client/client_test.go#L73-L86)
+Usage example as [seen in test](https://github.com/kaovilai/udistribution/blob/dd4070c5d75f4601e62d5a7b495a7ebd96b053f9/pkg/e2e_test.go#L45-L72)
 ```go
-  gotClient, err := NewClient(tt.args.configString, tt.args.envs)
-  if (err != nil) != tt.wantErr {
-    t.Errorf("NewClient() error = %v, wantErr %v", err, tt.wantErr)
-    return
-  }
-  rr := httptest.NewRecorder()
-  rq, err := http.NewRequest("GET", "/v2/", strings.NewReader(""))
-  if err != nil {
-    t.Fatal(err)
-  }
-  gotClient.GetApp().ServeHTTP(rr, rq)
-  if rr.Result().StatusCode != http.StatusOK && !tt.wantErr {
-    t.Errorf("NewClient() = %v, want %v", rr.Result().StatusCode, http.StatusOK)
-  }
+	ut, err := udistribution.NewTransportFromNewConfig("", os.Environ())
+	defer ut.Deregister()
+	if err != nil {
+		t.Errorf("failed to create transport with environment variables: %v", err)
+	}
+	srcRef, err := docker.ParseReference("//alpine")
+	if err != nil {
+		t.Errorf("failed to parse reference: %v", err)
+	}
+	destRef, err := ut.ParseReference("//alpine")
+	if err != nil {
+		t.Errorf("failed to parse reference: %v", err)
+	}
+	pc, err := getPolicyContext()
+	if err != nil {
+		t.Errorf("failed to get policy context: %v", err)
+	}
+	ctx, err := getDefaultContext()
+	if err != nil {
+		t.Errorf("failed to get default context: %v", err)
+	}
+	_, err = copy.Image(context.Background(), pc, destRef, srcRef, &copy.Options{
+		SourceCtx:      ctx,
+		DestinationCtx: ctx,
+	})
+	if err != nil {
+		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
+	}
 ```
 First you call `NewClient` with a config string and environment variables.
 Then you call the client's `ServeHTTP` method with a desired HTTP request.
