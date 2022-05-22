@@ -8,8 +8,12 @@ Go library providing a client to interface with storage drivers of [distribution
 Making it easier for Go programs to consume APIs on a needed basis without a listening server. This approach maybe more secure in an environment where it is not practical to obtain TLS certificates from a trusted certificate authorities, such as an unpredictable hostname/ip address.
 
 Current functionality:
-- [x] Initialize client with config string and/or environment variables
-- [x] ServeHTTP method can be accessed after initialization
+- [x] Modifies distribution/distribution to
+  - [x] Initialize client with config string and/or environment variables
+  - [x] ServeHTTP method can be accessed after initialization
+- [x] Implement a function to register new transport type to "github.com/containers/image/v5/transports"
+  - [x] Consumes distribution/distribution using exposed ServeHTTP method
+  - [x] [End to end test](pkg/e2e_test.go) which demonstrates how the transport type is registered and can be used to access distribution/distribution
 
 TODO:
 - [ ] implement [copy.Image()](https://github.com/containers/image/blob/3c83b65b71650f25c11d9b8585f304bd8299dd00/copy/copy.go#L186) function that copies an image from one running registry to use ServeHTTP from client in this library either here or in a separate library.
