@@ -782,8 +782,6 @@ func (c *udistributionClient) getBearerToken(ctx context.Context, challenge chal
 // detectPropertiesHelper performs the work of detectProperties which executes
 // it at most once.
 func (c *udistributionClient) detectPropertiesHelper(ctx context.Context) error {
-	// // TODO: remove? this function can be called without transport initialized. We cannot accept random pings without a listening server.
-	// return nil
 	// We overwrite the TLS clients `InsecureSkipVerify` only if explicitly
 	// specified by the system context
 	if c.sys != nil && c.sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
