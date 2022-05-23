@@ -8,6 +8,7 @@ import (
 	"github.com/containers/image/v5/docker/policyconfiguration"
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/transports"
+	"github.com/distribution/distribution/v3/uuid"
 
 	// "github.com/containers/image/v5/transports"
 	"github.com/containers/image/v5/types"
@@ -27,6 +28,7 @@ import (
 type udistributionTransport struct {
 	*client.Client
 	name string
+	uuid string
 }
 
 // Create new transport and register.
@@ -35,6 +37,7 @@ func NewTransport(client *client.Client, name string) *udistributionTransport {
 	t := udistributionTransport{
 		Client: client,
 		name:   name,
+		uuid:   uuid.Generate().String(),
 	}
 	if transports.Get(t.Name()) == nil {
 		transports.Register(t)
@@ -52,6 +55,7 @@ func NewTransportFromNewConfig(config string, env []string) (*udistributionTrans
 	t := udistributionTransport{
 		Client: c,
 		name:   c.GetApp().Config.Storage.Type(),
+		uuid:   uuid.Generate().String(),
 	}
 	if transports.Get(t.Name()) == nil {
 		transports.Register(t)
@@ -64,7 +68,7 @@ func (u udistributionTransport) Deregister() {
 }
 
 func (t udistributionTransport) Name() string {
-	return constants.TransportPrefix + t.name
+	return constants.TransportPrefix + t.name + ":" + t.uuid
 }
 
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an ImageReference.
