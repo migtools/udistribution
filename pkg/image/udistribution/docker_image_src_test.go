@@ -63,7 +63,7 @@ location = "@REGISTRY@/with-mirror"
 		// {"primary-override.example.com/busybox:latest", registry + "/primary-override/busybox:latest"},
 		// {"with-mirror.example.com/busybox:latest", registry + "/with-mirror/busybox:latest"},
 	} {
-		ref, err := ParseReference("//" + c.input, &testUdistributionTransport)
+		ref, err := ParseReference("//"+c.input, &testUdistributionTransport)
 		require.NoError(t, err, c.input)
 		src, err := ref.NewImageSource(context.Background(), &types.SystemContext{
 			RegistriesDirPath:           "/this/does/not/exist",

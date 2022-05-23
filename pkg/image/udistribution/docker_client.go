@@ -293,7 +293,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string, ut *u
 		registry:        registry,
 		userAgent:       userAgent,
 		tlsClientConfig: tlsClientConfig,
-		ut: ut,
+		ut:              ut,
 	}, nil
 }
 
@@ -301,9 +301,9 @@ func newDockerClient(sys *types.SystemContext, registry, reference string, ut *u
 // returns an error if an error occurred while making the http request or the status code received was 401
 func CheckAuth(ctx context.Context, sys *types.SystemContext, username, password, registry string) error {
 	var (
-		ut *udistributionTransport
+		ut  *udistributionTransport
 		err error
-	) 
+	)
 	if username == "" && password == "" {
 		// try to test empty credentials
 		ut, err = NewTransportFromNewConfig("", nil)
@@ -559,6 +559,7 @@ func (c *udistributionClient) makeRequestToResolvedURL(ctx context.Context, meth
 func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (res *http.Response, err error) {
 	log.Println("makeRequestToResolvedURLOnce: " + url.String())
 	log.Println("makeRequestToResolvedURLOnce-HOST: " + url.Host)
+	log.Println("makeRequestToResolvedURLOnce-PATH: " + url.Path)
 	useUdistributionHTTPServe := false
 	var req *http.Request
 	if strings.Contains(url.String(), dockerRegistry) || url.Host == "" || strings.Contains(url.Host, "127.0.0.1") {
@@ -572,7 +573,12 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		// log.Println("new url string: "+ url.String())
 		// url.Path = strings.SplitAfterN(url.String(),dockerRegistry,2)[1]
 		// log.Println("new path: " + url.Path)
-		req, err = http.NewRequestWithContext(ctx, method, url.Path, stream)
+		requestURL := url.String()
+		for _, prefixToRemove := range []string{"http://", "https://", url.Host} {
+			requestURL = strings.TrimPrefix(requestURL, prefixToRemove)
+		}
+		log.Println("makeRequestToResolvedURLOnce-prefixRemovedURL: " + requestURL)
+		req, err = http.NewRequestWithContext(ctx, method, requestURL, stream)
 		if err != nil {
 			return nil, err
 		}

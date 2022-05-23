@@ -54,6 +54,7 @@ func TestTransportValidatePolicyConfigurationScope(t *testing.T) {
 		assert.NoError(t, err, scope)
 	}
 }
+
 // Parse Reference is expected to be incompatible because it isn't meant to be used externally without udistributionTransport initialized.
 // func TestParseReference(t *testing.T) {
 // 	testParseReference(t, ParseReference)
@@ -132,7 +133,7 @@ func TestNewReference(t *testing.T) {
 
 func TestReferenceStringWithinTransport(t *testing.T) {
 	for _, c := range validReferenceTestCases {
-		ref, err := ParseReference("//" + c.input, &testUdistributionTransport)
+		ref, err := ParseReference("//"+c.input, &testUdistributionTransport)
 		require.NoError(t, err, c.input)
 		stringRef := ref.StringWithinTransport()
 		assert.Equal(t, c.stringWithinTransport, stringRef, c.input)
@@ -146,7 +147,7 @@ func TestReferenceStringWithinTransport(t *testing.T) {
 
 func TestReferenceDockerReference(t *testing.T) {
 	for _, c := range validReferenceTestCases {
-		ref, err := ParseReference("//" + c.input, &testUdistributionTransport)
+		ref, err := ParseReference("//"+c.input, &testUdistributionTransport)
 		require.NoError(t, err, c.input)
 		dockerRef := ref.DockerReference()
 		require.NotNil(t, dockerRef, c.input)

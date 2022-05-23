@@ -70,6 +70,7 @@ func NewClient(configString string, envs []string) (client *Client, err error) {
 	// 	fmt.Fprintf(os.Stderr, "failed to construct %s driver: %v", config.Storage.Type(), err)
 	// }
 }
+
 // randomSecretSize is the number of random bytes to generate if no secret
 // was specified.
 const randomSecretSize = 32

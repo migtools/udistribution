@@ -89,6 +89,11 @@ type udistributionReference struct {
 	*udistributionTransport
 }
 
+// for test
+func GetRef(ir types.ImageReference) reference.Named {
+	return ir.(udistributionReference).ref
+}
+
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an Docker ImageReference.
 func ParseReference(refString string, ut *udistributionTransport) (types.ImageReference, error) {
 	if !strings.HasPrefix(refString, "//") {
