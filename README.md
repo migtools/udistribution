@@ -15,10 +15,6 @@ Current functionality:
   - [x] Consumes distribution/distribution using exposed ServeHTTP method
   - [x] [End to end test](pkg/e2e_test.go) which demonstrates how the transport type is registered and can be used to access distribution/distribution
 
-TODO:
-- [ ] implement [copy.Image()](https://github.com/containers/image/blob/3c83b65b71650f25c11d9b8585f304bd8299dd00/copy/copy.go#L186) function that copies an image from one running registry to use ServeHTTP from client in this library either here or in a separate library.
-- [ ] [oci_src](https://github.com/containers/image/blob/7152f888b90d2f3cd7a633246ceba30f5cd49cc3/oci/layout/oci_src.go), [oci_dest](https://github.com/containers/image/blob/7152f888b90d2f3cd7a633246ceba30f5cd49cc3/oci/layout/oci_dest.go) also need to be implemented.
-
 ## Getting Started
 Usage example as [seen in test](https://github.com/kaovilai/udistribution/blob/dd4070c5d75f4601e62d5a7b495a7ebd96b053f9/pkg/e2e_test.go#L45-L72)
 ```go
