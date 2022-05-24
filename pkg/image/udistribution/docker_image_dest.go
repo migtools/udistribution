@@ -232,7 +232,7 @@ func (d *dockerImageDestination) blobExists(ctx context.Context, repo reference.
 	checkPath := fmt.Sprintf(blobsPath, reference.Path(repo), digest.String())
 	logrus.Debugf("Checking %s", checkPath)
 	if d.c.ut == nil || d.c.ut.Client == nil {
-		d.c.ut = d.ref.udistributionTransport
+		d.c.ut = d.ref.UdistributionTransport
 	}
 	res, err := d.c.makeRequest(ctx, http.MethodHead, checkPath, nil, nil, v2Auth, extraScope)
 	if err != nil {

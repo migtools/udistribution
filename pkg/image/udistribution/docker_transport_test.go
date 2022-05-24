@@ -19,7 +19,7 @@ const (
 
 var (
 	testTransport              types.ImageTransport
-	testUdistributionTransport udistributionTransport
+	testUdistributionTransport UdistributionTransport
 )
 
 func init() {
@@ -55,7 +55,7 @@ func TestTransportValidatePolicyConfigurationScope(t *testing.T) {
 	}
 }
 
-// Parse Reference is expected to be incompatible because it isn't meant to be used externally without udistributionTransport initialized.
+// Parse Reference is expected to be incompatible because it isn't meant to be used externally without UdistributionTransport initialized.
 // func TestParseReference(t *testing.T) {
 // 	testParseReference(t, ParseReference)
 // }

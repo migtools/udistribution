@@ -104,7 +104,7 @@ func newImageSource(ctx context.Context, sys *types.SystemContext, ref udistribu
 // Given a logicalReference and a pullSource, return a udistributionImageSource if it is reachable.
 // The caller must call .Close() on the returned ImageSource.
 func newImageSourceAttempt(ctx context.Context, sys *types.SystemContext, logicalRef udistributionReference, pullSource sysregistriesv2.PullSource) (*udistributionImageSource, error) {
-	physicalRef, err := newReference(pullSource.Reference, logicalRef.udistributionTransport)
+	physicalRef, err := newReference(pullSource.Reference, logicalRef.UdistributionTransport)
 	if err != nil {
 		return nil, err
 	}

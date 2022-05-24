@@ -23,9 +23,9 @@ import (
 // }
 
 // Transport is an ImageTransport for container registry-hosted images.
-// var Transport = udistributionTransport{}
+// var Transport = UdistributionTransport{}
 
-type udistributionTransport struct {
+type UdistributionTransport struct {
 	*client.Client
 	name string
 	uuid string
@@ -33,8 +33,8 @@ type udistributionTransport struct {
 
 // Create new transport and register.
 // When you are done with this transport, use Deregister() to unregister it from available transports.
-func NewTransport(client *client.Client, name string) *udistributionTransport {
-	t := udistributionTransport{
+func NewTransport(client *client.Client, name string) *UdistributionTransport {
+	t := UdistributionTransport{
 		Client: client,
 		name:   name,
 		uuid:   uuid.Generate().String(),
@@ -47,12 +47,12 @@ func NewTransport(client *client.Client, name string) *udistributionTransport {
 
 // Create new transport with client params and register.
 // When you are done with this transport, use Deregister() to unregister it from available transports.
-func NewTransportFromNewConfig(config string, env []string) (*udistributionTransport, error) {
+func NewTransportFromNewConfig(config string, env []string) (*UdistributionTransport, error) {
 	c, err := client.NewClient(config, env)
 	if err != nil {
 		return nil, err
 	}
-	t := udistributionTransport{
+	t := UdistributionTransport{
 		Client: c,
 		name:   c.GetApp().Config.Storage.Type(),
 		uuid:   uuid.Generate().String(),
@@ -63,16 +63,16 @@ func NewTransportFromNewConfig(config string, env []string) (*udistributionTrans
 	return &t, nil
 }
 
-func (u udistributionTransport) Deregister() {
+func (u UdistributionTransport) Deregister() {
 	transports.Delete(u.Name())
 }
 
-func (t udistributionTransport) Name() string {
+func (t UdistributionTransport) Name() string {
 	return constants.TransportPrefix + t.name + ":" + t.uuid
 }
 
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an ImageReference.
-func (t udistributionTransport) ParseReference(reference string) (types.ImageReference, error) {
+func (t UdistributionTransport) ParseReference(reference string) (types.ImageReference, error) {
 	return ParseReference(reference, &t)
 }
 
@@ -80,7 +80,7 @@ func (t udistributionTransport) ParseReference(reference string) (types.ImageRef
 // (i.e. a valid PolicyConfigurationIdentity() or PolicyConfigurationNamespaces() return value).
 // It is acceptable to allow an invalid value which will never be matched, it can "only" cause user confusion.
 // scope passed to this function will not be "", that value is always allowed.
-func (t udistributionTransport) ValidatePolicyConfigurationScope(scope string) error {
+func (t UdistributionTransport) ValidatePolicyConfigurationScope(scope string) error {
 	// FIXME? We could be verifying the various character set and length restrictions
 	// from docker/distribution/reference.regexp.go, but other than that there
 	// are few semantically invalid strings.
@@ -90,7 +90,7 @@ func (t udistributionTransport) ValidatePolicyConfigurationScope(scope string) e
 // udistributionReference is an ImageReference for Docker images.
 type udistributionReference struct {
 	ref reference.Named // By construction we know that !reference.IsNameOnly(ref)
-	*udistributionTransport
+	*UdistributionTransport
 }
 
 // for test
@@ -99,7 +99,7 @@ func GetRef(ir types.ImageReference) reference.Named {
 }
 
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an Docker ImageReference.
-func ParseReference(refString string, ut *udistributionTransport) (types.ImageReference, error) {
+func ParseReference(refString string, ut *UdistributionTransport) (types.ImageReference, error) {
 	if !strings.HasPrefix(refString, "//") {
 		return nil, errors.Errorf("docker: image reference %s does not start with //", refString)
 	}
@@ -112,12 +112,12 @@ func ParseReference(refString string, ut *udistributionTransport) (types.ImageRe
 }
 
 // NewReference returns a Docker reference for a named reference. The reference must satisfy !reference.IsNameOnly().
-func NewReference(ref reference.Named, ut *udistributionTransport) (types.ImageReference, error) {
+func NewReference(ref reference.Named, ut *UdistributionTransport) (types.ImageReference, error) {
 	return newReference(ref, ut)
 }
 
 // newReference returns a udistributionReference for a named reference.
-func newReference(ref reference.Named, ut *udistributionTransport) (udistributionReference, error) {
+func newReference(ref reference.Named, ut *UdistributionTransport) (udistributionReference, error) {
 	if ut == nil {
 		return udistributionReference{}, errors.Errorf("image reference is invalid: missing transport")
 	}
@@ -136,12 +136,12 @@ func newReference(ref reference.Named, ut *udistributionTransport) (udistributio
 	}
 	return udistributionReference{
 		ref:                    ref,
-		udistributionTransport: ut,
+		UdistributionTransport: ut,
 	}, nil
 }
 
 func (ref udistributionReference) Transport() types.ImageTransport {
-	return ref.udistributionTransport
+	return ref.UdistributionTransport
 }
 
 // StringWithinTransport returns a string representation of the reference, which MUST be such that

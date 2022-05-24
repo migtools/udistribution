@@ -100,7 +100,7 @@ type udistributionClient struct {
 	registry  string
 	userAgent string
 
-	ut *udistributionTransport
+	ut *UdistributionTransport
 
 	// tlsClientConfig is setup by newDockerClient and will be used and updated
 	// by detectProperties(). Callers can edit tlsClientConfig.InsecureSkipVerify in the meantime.
@@ -227,7 +227,7 @@ func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference
 	}
 
 	registry := reference.Domain(ref.ref)
-	client, err := newDockerClient(sys, registry, ref.ref.Name(), ref.udistributionTransport)
+	client, err := newDockerClient(sys, registry, ref.ref.Name(), ref.UdistributionTransport)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func newDockerClientFromRef(sys *types.SystemContext, ref udistributionReference
 // (e.g., "registry.com[:5000][/some/namespace]/repo").
 // Please note that newDockerClient does not set all members of udistributionClient
 // (e.g., username and password); those must be set by callers if necessary.
-func newDockerClient(sys *types.SystemContext, registry, reference string, ut *udistributionTransport) (*udistributionClient, error) {
+func newDockerClient(sys *types.SystemContext, registry, reference string, ut *UdistributionTransport) (*udistributionClient, error) {
 	hostName := registry
 	if registry == dockerHostname {
 		registry = dockerRegistry
@@ -301,7 +301,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string, ut *u
 // returns an error if an error occurred while making the http request or the status code received was 401
 func CheckAuth(ctx context.Context, sys *types.SystemContext, username, password, registry string) error {
 	var (
-		ut  *udistributionTransport
+		ut  *UdistributionTransport
 		err error
 	)
 	if username == "" && password == "" {
