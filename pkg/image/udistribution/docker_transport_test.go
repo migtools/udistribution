@@ -31,7 +31,7 @@ func init() {
 	testTransport = types.ImageTransport(testUdistributionTransport)
 }
 func TestTransportName(t *testing.T) {
-	assert.Equal(t, constants.TransportPrefix+testUdistributionTransport.name+":"+testUdistributionTransport.uuid, testTransport.Name())
+	assert.Equal(t, constants.TransportPrefix+testUdistributionTransport.name+"-"+testUdistributionTransport.uuid, testTransport.Name())
 }
 
 func TestTransportParseReference(t *testing.T) {

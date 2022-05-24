@@ -68,7 +68,7 @@ func (u UdistributionTransport) Deregister() {
 }
 
 func (t UdistributionTransport) Name() string {
-	return constants.TransportPrefix + t.name + ":" + t.uuid
+	return constants.TransportPrefix + t.name + "-" + t.uuid
 }
 
 // ParseReference converts a string, which should not start with the ImageTransport.Name prefix, into an ImageReference.
