@@ -51,6 +51,9 @@ First you call `NewClient` with a config string and environment variables.
 Then you call the client's `ServeHTTP` method with a desired HTTP request.
 
 You can use `httptest.NewRecorder` to record the response.
+
+Alternatively, you may use alltransports.ParseImageName(ref) when transport name `ut.Name()://` is in the reference instead of using `ut.ParseReference`
+
 ## Known issues:
 Prometheus metrics config must be disabled.
 
