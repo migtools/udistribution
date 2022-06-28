@@ -557,9 +557,7 @@ func (c *udistributionClient) makeRequestToResolvedURL(ctx context.Context, meth
 // makeRequest should generally be preferred.
 // Note that no exponential back off is performed when receiving an http 429 status code.
 func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, method string, url *url.URL, headers map[string][]string, stream io.Reader, streamLen int64, auth sendAuth, extraScope *authScope) (res *http.Response, err error) {
-	log.Println("makeRequestToResolvedURLOnce: " + url.String())
 	log.Println("makeRequestToResolvedURLOnce-HOST: " + url.Host)
-	log.Println("makeRequestToResolvedURLOnce-PATH: " + url.Path)
 	useUdistributionHTTPServe := false
 	var req *http.Request
 	if strings.Contains(url.String(), dockerRegistry) || url.Host == "" || strings.Contains(url.Host, "127.0.0.1") {
@@ -577,7 +575,6 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		for _, prefixToRemove := range []string{"http://", "https://", url.Host} {
 			requestURL = strings.TrimPrefix(requestURL, prefixToRemove)
 		}
-		log.Println("makeRequestToResolvedURLOnce-prefixRemovedURL: " + requestURL)
 		req, err = http.NewRequestWithContext(ctx, method, requestURL, stream)
 		if err != nil {
 			return nil, err
@@ -615,9 +612,10 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		log.Println("useUdistributionHTTPServe-Status: " + res.Status)
 		loc, _ := res.Location()
 		if loc != nil {
-			log.Println("res location: " + loc.String())
+			log.Println("res hostname: " + loc.Hostname())
 		}
 		if res.StatusCode == 307 {
+			log.Println("307 redirecting...")
 			return c.makeRequestToResolvedURLOnce(ctx, method, loc, req.Header, stream, streamLen, auth, extraScope)
 		}
 		return res, nil
