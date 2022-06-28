@@ -103,7 +103,7 @@ func TestE2e(t *testing.T) {
 	// if err != nil {
 	// 	t.Errorf("failed to delete image: %v", err)
 	// }
-	
+
 	// test that udistributionReference when used as source can call ConfigBlob() which is used during velero restore
 	publicRawSource, err := destRef.NewImageSource(context.Background(), ctx)
 	if err != nil {
