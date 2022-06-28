@@ -1,3 +1,4 @@
 cover.out
 **/debug.test
-.vscode/*
+.vscode/launch.json
+.vscode/*.log
