@@ -48,24 +48,6 @@ redis:
   dialtimeout: 10ms
   readtimeout: 10ms
   writetimeout: 10ms
-notifications:
-    events:
-        includereferences: true
-    endpoints:
-        - name: local-5003
-          url: http://localhost:5003/callback
-          headers:
-             Authorization: [Bearer <an example token>]
-          timeout: 1s
-          threshold: 10
-          backoff: 1s
-          disabled: true
-        - name: local-8083
-          url: http://localhost:8083/callback
-          timeout: 1s
-          threshold: 10
-          backoff: 1s
-          disabled: true 
 health:
   storagedriver:
     enabled: true
