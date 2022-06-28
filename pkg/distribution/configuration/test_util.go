@@ -256,32 +256,6 @@ var defaultWantConfig = configuration.Configuration{
 		ReadTimeout:  10 * time.Millisecond,
 		WriteTimeout: 10 * time.Millisecond,
 	},
-	Notifications: configuration.Notifications{
-		EventConfig: configuration.Events{
-			IncludeReferences: true,
-		},
-		Endpoints: []configuration.Endpoint{
-			{
-				Name: "local-5003",
-				URL:  "http://localhost:5003/callback",
-				Headers: http.Header{
-					"Authorization": []string{"Bearer <an example token>"},
-				},
-				Timeout:   1 * time.Second,
-				Threshold: 10,
-				Backoff:   1 * time.Second,
-				Disabled:  true,
-			},
-			{
-				Name:      "local-8083",
-				URL:       "http://localhost:8083/callback",
-				Timeout:   1 * time.Second,
-				Threshold: 10,
-				Backoff:   1 * time.Second,
-				Disabled:  true,
-			},
-		},
-	},
 	Health: configuration.Health{
 		StorageDriver: struct {
 			// Enabled turns on the health check for the storage driver
