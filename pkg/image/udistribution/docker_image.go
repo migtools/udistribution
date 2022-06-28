@@ -8,10 +8,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/image"
 	"github.com/containers/image/v5/manifest"
 	"github.com/containers/image/v5/types"
+	"github.com/kaovilai/udistribution/pkg/image/udistribution/reference"
 	"github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
 )

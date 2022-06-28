@@ -617,6 +617,9 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		if loc != nil {
 			log.Println("res location: " + loc.String())
 		}
+		if res.StatusCode == 307 {
+			return c.makeRequestToResolvedURLOnce(ctx, method, loc, req.Header, stream, streamLen, auth, extraScope)
+		}
 		return res, nil
 	} else {
 		if c.client.CheckRedirect == nil {
