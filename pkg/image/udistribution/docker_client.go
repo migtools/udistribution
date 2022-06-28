@@ -619,6 +619,18 @@ func (c *udistributionClient) makeRequestToResolvedURLOnce(ctx context.Context, 
 		}
 		return res, nil
 	} else {
+		if c.client.CheckRedirect == nil {
+			c.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+				logrus.Debugf("Redirecting host to %s", req.URL.Host)
+				if len(via) >= 10 {
+					return errors.New("stopped after 10 redirects")
+				}
+				if auth == v2Auth {
+					return errors.Wrap(c.setupRequestAuth(req, extraScope), "failed to authorize redirect")
+				}
+				return nil
+			}
+		}
 		log.Printf("c.client: %v", c.client)
 		res, err = c.client.Do(req)
 	}
