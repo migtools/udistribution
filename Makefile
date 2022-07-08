@@ -4,4 +4,4 @@ GO_TARGET ?= ./...
 fmt:
 	go fmt $(GO_TARGET)
 test:
-	go test $(GO_TARGET) -coverprofile cover.out
+	go test $(GO_TARGET) -coverprofile cover.out -tags include_gcs

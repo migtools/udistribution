@@ -35,6 +35,28 @@ udistribution/pkg/e2e_test.go:63: failed to copy image: choosing an image from m
 */
 func TestE2e(t *testing.T) {
 	t.Logf("TestE2e called")
+
+	_, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=s3",
+	})
+	if err != nil {
+		t.Errorf("Cannot init s3 udistribution: %v", err)
+	}
+	t.Log("S3 udistribution initialized")
+	_, err = udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=azure",
+	})
+	if err != nil {
+		t.Errorf("Cannot init azure udistribution: %v", err)
+	}
+	t.Log("Azure udistribution initialized")
+	_, err = udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=gcs",
+	})
+	if err != nil {
+		t.Errorf("Cannot init gcs udistribution: %v", err)
+	}
+	t.Log("GCS udistribution initialized")
 	// Set test environment variables when running in IDE.
 	// os.Setenv("UDISTRIBUTION_TEST_E2E_ENABLE", "true")
 	// os.Setenv("REGISTRY_STORAGE", "s3")
@@ -97,6 +119,14 @@ func TestE2e(t *testing.T) {
 	if err != nil {
 		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
 	}
+	
+	// try trigger reusing blob
+	_, err = copy.Image(context.Background(), pc, destRef, srcRef, &options)
+	if err != nil {
+		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
+	}
+
+
 	// t.Errorf("fail here")
 	// Cleanup
 	// err = destRef.DeleteImage(context.Background(), nil)
@@ -135,7 +165,7 @@ func TestE2e(t *testing.T) {
 		concurrentBlobCopiesSemaphore := semaphore.NewWeighted(int64(max))
 		if err := concurrentBlobCopiesSemaphore.Acquire(context.Background(), 1); err != nil {
 			// This can only fail with ctx.Err(), so no need to blame acquiring the semaphore.
-			fmt.Errorf("copying config: %w", err)
+			_ = fmt.Errorf("copying config: %w", err)
 		}
 		defer concurrentBlobCopiesSemaphore.Release(1)
 
