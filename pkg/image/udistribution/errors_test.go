@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/docker/distribution/registry/api/errcode"
-	"github.com/docker/distribution/registry/client"
+	"github.com/distribution/distribution/v3/registry/api/errcode"
+	"github.com/distribution/distribution/v3/registry/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

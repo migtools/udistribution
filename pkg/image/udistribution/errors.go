@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/docker/distribution/registry/client"
+	"github.com/distribution/distribution/v3/registry/client"
 	perrors "github.com/pkg/errors"
 )
 

@@ -25,7 +25,7 @@ import (
 	"github.com/containers/image/v5/types"
 	"github.com/containers/image/v5/version"
 	"github.com/containers/storage/pkg/homedir"
-	clientLib "github.com/docker/distribution/registry/client"
+	clientLib "github.com/distribution/distribution/v3/registry/client"
 	"github.com/docker/go-connections/tlsconfig"
 	"github.com/kaovilai/udistribution/pkg/internal/image/iolimits"
 	digest "github.com/opencontainers/go-digest"
