@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	azstorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/containers/image/v5/copy"
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
@@ -135,7 +136,7 @@ func TestE2e(t *testing.T) {
 		concurrentBlobCopiesSemaphore := semaphore.NewWeighted(int64(max))
 		if err := concurrentBlobCopiesSemaphore.Acquire(context.Background(), 1); err != nil {
 			// This can only fail with ctx.Err(), so no need to blame acquiring the semaphore.
-			fmt.Errorf("copying config: %w", err)
+			_ = fmt.Errorf("copying config: %w", err)
 		}
 		defer concurrentBlobCopiesSemaphore.Release(1)
 
@@ -182,3 +183,45 @@ func getDefaultContext() (*types.SystemContext, error) {
 // func getUnableToDeleteError(ref reference.Named) error {
 // 	return errors.Errorf("Unable to delete %v. Image may not exist or is not stored with a v2 Schema in a v2 registry", ref)
 // }
+
+func TestS3Store(t *testing.T) {
+	// test s3 driver
+	ut, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=s3",
+		"REGISTRY_STORAGE_S3_BUCKET=udistribution-test-e2e",
+		"REGISTRY_STORAGE_S3_ACCESSKEY=<your-access-key>",
+		"REGISTRY_STORAGE_S3_SECRETKEY=<your-secret-key>",
+		"REGISTRY_STORAGE_S3_REGION=us-east-1",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ut.Deregister()
+}
+func TestAzureStore(t *testing.T){
+	defer func() {
+	if r := recover(); r != nil {
+		t.Logf("TestE2e recovered from panic: %v", r)
+		if r.(azstorage.AzureStorageServiceError).Code == "AuthenticationFailed" {
+			t.Log("azure storage driver initialized and authentication failed as expected")
+		} else {
+			t.Fatalf("TestE2e unexpected error: %v", r)
+		}
+	}
+	}()
+	ut, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=azure",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTNAME=accountname",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTKEY=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==", //sample key
+		"REGISTRY_STORAGE_AZURE_CONTAINER=udistribution-test-e2e",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ut.Deregister()
+}
+
+func TestGCSStore(t *testing.T){
+	t.Skip("GCS is not supported yet")
+	// TODO: test gcs driver
+}
