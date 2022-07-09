@@ -198,16 +198,16 @@ func TestS3Store(t *testing.T) {
 	}
 	ut.Deregister()
 }
-func TestAzureStore(t *testing.T){
+func TestAzureStore(t *testing.T) {
 	defer func() {
-	if r := recover(); r != nil {
-		t.Logf("TestE2e recovered from panic: %v", r)
-		if r.(azstorage.AzureStorageServiceError).Code == "AuthenticationFailed" {
-			t.Log("azure storage driver initialized and authentication failed as expected")
-		} else {
-			t.Fatalf("TestE2e unexpected error: %v", r)
+		if r := recover(); r != nil {
+			t.Logf("TestE2e recovered from panic: %v", r)
+			if r.(azstorage.AzureStorageServiceError).Code == "AuthenticationFailed" {
+				t.Log("azure storage driver initialized and authentication failed as expected")
+			} else {
+				t.Fatalf("TestE2e unexpected error: %v", r)
+			}
 		}
-	}
 	}()
 	ut, err := udistribution.NewTransportFromNewConfig("", []string{
 		"REGISTRY_STORAGE=azure",
@@ -221,7 +221,7 @@ func TestAzureStore(t *testing.T){
 	ut.Deregister()
 }
 
-func TestGCSStore(t *testing.T){
+func TestGCSStore(t *testing.T) {
 	t.Skip("GCS is not supported yet")
 	// TODO: test gcs driver
 }
