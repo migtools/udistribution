@@ -37,12 +37,6 @@ udistribution/pkg/e2e_test.go:63: failed to copy image: choosing an image from m
 func TestE2e(t *testing.T) {
 	t.Logf("TestE2e called")
 	// Set test environment variables when running in IDE.
-	// os.Setenv("UDISTRIBUTION_TEST_E2E_ENABLE", "true")
-	// os.Setenv("REGISTRY_STORAGE", "s3")
-	// os.Setenv("REGISTRY_STORAGE_S3_BUCKET", "")
-	// os.Setenv("REGISTRY_STORAGE_S3_ACCESSKEY", "")
-	// os.Setenv("REGISTRY_STORAGE_S3_SECRETKEY", "")
-	// os.Setenv("REGISTRY_STORAGE_S3_REGION", "us-east-1")
 	// only test if found key in env
 	if os.Getenv("UDISTRIBUTION_TEST_E2E_ENABLE") == "" {
 		t.Skip("UDISTRIBUTION_TEST_E2E_ENABLE not set, skipping e2e test")
@@ -186,17 +180,24 @@ func getDefaultContext() (*types.SystemContext, error) {
 
 func TestS3Store(t *testing.T) {
 	// test s3 driver
-	ut, err := udistribution.NewTransportFromNewConfig("", []string{
-		"REGISTRY_STORAGE=s3",
-		"REGISTRY_STORAGE_S3_BUCKET=udistribution-test-e2e",
-		"REGISTRY_STORAGE_S3_ACCESSKEY=<your-access-key>",
-		"REGISTRY_STORAGE_S3_SECRETKEY=<your-secret-key>",
-		"REGISTRY_STORAGE_S3_REGION=us-east-1",
-	})
-	if err != nil {
-		t.Fatal(err)
+	validRegions := []string{
+		"us-east-1",
+		"eu-north-1",
+		"af-south-1",
 	}
-	ut.Deregister()
+	for _, region := range validRegions {
+		ut, err := udistribution.NewTransportFromNewConfig("", []string{
+			"REGISTRY_STORAGE=s3",
+			"REGISTRY_STORAGE_S3_BUCKET=udistribution-test-e2e",
+			"REGISTRY_STORAGE_S3_ACCESSKEY=<your-access-key>",
+			"REGISTRY_STORAGE_S3_SECRETKEY=<your-secret-key>",
+			"REGISTRY_STORAGE_S3_REGION=" + region,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		ut.Deregister()
+	}
 }
 func TestAzureStore(t *testing.T) {
 	defer func() {
