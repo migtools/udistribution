@@ -23,6 +23,16 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute v1.7.0 // indirect
+	cloud.google.com/go/iam v0.3.0 // indirect
+	cloud.google.com/go/storage v1.22.1 // indirect
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
+	github.com/googleapis/go-type-adapters v1.0.0 // indirect
+	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
+)
+
+require (
 	cloud.google.com/go v0.102.2-0.20220627142403-5be6d33a57cc // indirect
 	github.com/Azure/azure-sdk-for-go v56.3.0+incompatible
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect

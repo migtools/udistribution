@@ -7,6 +7,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILDTAGS: include_gcs include_oss
     steps:
     - uses: actions/checkout@v3
     - name: pre-req gpgme
@@ -25,7 +27,7 @@ jobs:
         go-version: 1.18
 
     - name: Build
-      run: go build -v ./...
+      run: go build -tags "${{ env.BUILDTAGS }}" -v ./...
 
     - name: Test
       run: |
@@ -38,7 +40,7 @@ jobs:
         export REGISTRY_STORAGE_S3_SECRETKEY=${{ secrets.REGISTRY_STORAGE_S3_SECRETKEY }}
         export REGISTRY_STORAGE_S3_REGION=${{ secrets.REGISTRY_STORAGE_S3_REGION }}
         # start tests
-        go test -v ./... -coverprofile cover.out
+        go test -tags "${{ env.BUILDTAGS }}" -v ./... -coverprofile cover.out
     - uses: codecov/codecov-action@v2
   format:
     needs: [build]

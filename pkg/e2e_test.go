@@ -223,6 +223,28 @@ func TestAzureStore(t *testing.T) {
 }
 
 func TestGCSStore(t *testing.T) {
-	t.Skip("GCS is not supported yet")
-	// TODO: test gcs driver
+	defer func() {
+		if r := recover(); r != nil {
+			t.Logf("TestE2e recovered from panic: %v", r)
+			if fmt.Sprint(r) == "The credentials were not specified in the correct format" {
+				t.Log("google cloud storage driver initialized and authentication failed as expected")
+			} else {
+				t.Fatalf("TestE2e unexpected error: %v", r)
+			}
+		}
+	}()
+	ut, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=gcs",
+		"REGISTRY_STORAGE_GCS_BUCKET=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_PROJECT=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_TYPE=service_account",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_PROJECT_ID=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_PRIVATE_KEY_ID=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_PRIVATE_KEY=",
+		"REGISTRY_STORAGE_GCS_CLIENT_EMAIL=test@e2e.io",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ut.Deregister()
 }
