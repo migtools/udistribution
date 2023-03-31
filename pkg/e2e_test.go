@@ -36,6 +36,46 @@ udistribution/pkg/e2e_test.go:63: failed to copy image: choosing an image from m
 */
 func TestE2e(t *testing.T) {
 	t.Logf("TestE2e called")
+
+	_, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=s3",
+		"REGISTRY_STORAGE_S3_REGION=us-east-1",
+		"REGISTRY_STORAGE_S3_BUCKET=udistribution-test",
+	})
+	if err != nil {
+		t.Errorf("Cannot init s3 udistribution: %v", err)
+	}
+	t.Log("S3 udistribution initialized")
+	// catch panic
+	defer func() {
+		if r := recover(); r != nil {
+			switch fmt.Sprint(r) {
+			case "azure: malformed storage account key: illegal base64 data at input byte 4":
+				// expected panic.. continue
+			default:
+				t.Errorf("Unexpected panic: %v", r)
+			}
+		}
+	}()
+	_, err = udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=azure",
+		"REGISTRY_STORAGE_AZURE_CONTAINER=udistribution-test",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTNAME=udistributiontest",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTKEY=somekey",
+	})
+	if err != nil {
+		t.Errorf("Cannot init azure udistribution: %v", err)
+	}
+	t.Log("Azure udistribution initialized")
+	_, err = udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=gcs",
+		"REGISTRY_STORAGE_GCS_BUCKET=udistribution-test",
+		"REGISTRY_STORAGE_GCS_KEYFILE=somekey",
+	})
+	if err != nil {
+		t.Errorf("Cannot init gcs udistribution: %v", err)
+	}
+	t.Log("GCS udistribution initialized")
 	// Set test environment variables when running in IDE.
 	// only test if found key in env
 	if os.Getenv("UDISTRIBUTION_TEST_E2E_ENABLE") == "" {
@@ -92,6 +132,14 @@ func TestE2e(t *testing.T) {
 	if err != nil {
 		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
 	}
+	
+	// try trigger reusing blob
+	_, err = copy.Image(context.Background(), pc, destRef, srcRef, &options)
+	if err != nil {
+		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
+	}
+
+
 	// t.Errorf("fail here")
 	// Cleanup
 	// err = destRef.DeleteImage(context.Background(), nil)
