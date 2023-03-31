@@ -132,13 +132,12 @@ func TestE2e(t *testing.T) {
 	if err != nil {
 		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
 	}
-	
+
 	// try trigger reusing blob
 	_, err = copy.Image(context.Background(), pc, destRef, srcRef, &options)
 	if err != nil {
 		t.Errorf("%v", errors.Wrapf(err, "failed to copy image"))
 	}
-
 
 	// t.Errorf("fail here")
 	// Cleanup
