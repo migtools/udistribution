@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	azstorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/containers/image/v5/copy"
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
@@ -58,12 +59,6 @@ func TestE2e(t *testing.T) {
 	}
 	t.Log("GCS udistribution initialized")
 	// Set test environment variables when running in IDE.
-	// os.Setenv("UDISTRIBUTION_TEST_E2E_ENABLE", "true")
-	// os.Setenv("REGISTRY_STORAGE", "s3")
-	// os.Setenv("REGISTRY_STORAGE_S3_BUCKET", "")
-	// os.Setenv("REGISTRY_STORAGE_S3_ACCESSKEY", "")
-	// os.Setenv("REGISTRY_STORAGE_S3_SECRETKEY", "")
-	// os.Setenv("REGISTRY_STORAGE_S3_REGION", "us-east-1")
 	// only test if found key in env
 	if os.Getenv("UDISTRIBUTION_TEST_E2E_ENABLE") == "" {
 		t.Skip("UDISTRIBUTION_TEST_E2E_ENABLE not set, skipping e2e test")
@@ -212,3 +207,74 @@ func getDefaultContext() (*types.SystemContext, error) {
 // func getUnableToDeleteError(ref reference.Named) error {
 // 	return errors.Errorf("Unable to delete %v. Image may not exist or is not stored with a v2 Schema in a v2 registry", ref)
 // }
+
+func TestS3Store(t *testing.T) {
+	// test s3 driver
+	validRegions := []string{
+		"us-east-1",
+		"eu-north-1",
+		"af-south-1",
+	}
+	for _, region := range validRegions {
+		ut, err := udistribution.NewTransportFromNewConfig("", []string{
+			"REGISTRY_STORAGE=s3",
+			"REGISTRY_STORAGE_S3_BUCKET=udistribution-test-e2e",
+			"REGISTRY_STORAGE_S3_ACCESSKEY=<your-access-key>",
+			"REGISTRY_STORAGE_S3_SECRETKEY=<your-secret-key>",
+			"REGISTRY_STORAGE_S3_REGION=" + region,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		ut.Deregister()
+	}
+}
+func TestAzureStore(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Logf("TestE2e recovered from panic: %v", r)
+			if r.(azstorage.AzureStorageServiceError).Code == "AuthenticationFailed" {
+				t.Log("azure storage driver initialized and authentication failed as expected")
+			} else {
+				t.Fatalf("TestE2e unexpected error: %v", r)
+			}
+		}
+	}()
+	ut, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=azure",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTNAME=accountname",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTKEY=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==", //sample key
+		"REGISTRY_STORAGE_AZURE_CONTAINER=udistribution-test-e2e",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ut.Deregister()
+}
+
+func TestGCSStore(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Logf("TestE2e recovered from panic: %v", r)
+			if fmt.Sprint(r) == "The credentials were not specified in the correct format" {
+				t.Log("google cloud storage driver initialized and authentication failed as expected")
+			} else {
+				t.Fatalf("TestE2e unexpected error: %v", r)
+			}
+		}
+	}()
+	ut, err := udistribution.NewTransportFromNewConfig("", []string{
+		"REGISTRY_STORAGE=gcs",
+		"REGISTRY_STORAGE_GCS_BUCKET=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_PROJECT=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_TYPE=service_account",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_PROJECT_ID=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_PRIVATE_KEY_ID=udistribution-test-e2e",
+		"REGISTRY_STORAGE_GCS_CREDENTIALS_PRIVATE_KEY=",
+		"REGISTRY_STORAGE_GCS_CLIENT_EMAIL=test@e2e.io",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ut.Deregister()
+}

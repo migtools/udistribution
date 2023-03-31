@@ -7,18 +7,27 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILDTAGS: include_gcs include_oss
     steps:
     - uses: actions/checkout@v3
     - name: pre-req gpgme
       run:  sudo apt-get install libgpgme11 libgpgme-dev
-
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.18
 
     - name: Build
-      run: go build -tags include_gcs -v ./...
+      run: go build -tags "${{ env.BUILDTAGS }}" -v ./...
 
     - name: Test
       run: |
@@ -31,7 +40,7 @@ jobs:
         export REGISTRY_STORAGE_S3_SECRETKEY=${{ secrets.REGISTRY_STORAGE_S3_SECRETKEY }}
         export REGISTRY_STORAGE_S3_REGION=${{ secrets.REGISTRY_STORAGE_S3_REGION }}
         # start tests
-        go test -tags include_gcs -v ./... -coverprofile cover.out
+        make test
     - uses: codecov/codecov-action@v2
   format:
     needs: [build]
@@ -42,6 +51,13 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.18
+
+    - run: go mod tidy
+
+    - name: Go mod is tidy
+      run: |
+        git diff --exit-code go.mod go.sum
+
     - name: Format
       run: go fmt ./...
     - name: commit format

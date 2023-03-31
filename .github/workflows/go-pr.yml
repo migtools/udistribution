@@ -7,22 +7,37 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILDTAGS: include_gcs include_oss
     steps:
     - uses: actions/checkout@v3
     - name: pre-req gpgme
       run:  sudo apt-get install libgpgme11 libgpgme-dev
-
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.18
 
     - name: Build
-      run: go build -tags include_gcs -v ./...
+      run: go build -tags "${{ env.BUILDTAGS }}" -v ./...
 
     - name: Test
       run: |
-        # start tests
-        go test -tags include_gcs -v ./... -coverprofile cover.out
+        make test
+
     - uses: codecov/codecov-action@v2
+
+    - run: go mod tidy
+
+    - name: Go mod is tidy
+      run: |
+        git diff --exit-code go.mod go.sum
 
