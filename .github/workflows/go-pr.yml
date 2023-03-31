@@ -3,9 +3,12 @@ name: Go-pull_request
 on:
   pull_request:
     branches: [ main ]
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited, ready_for_review, locked, unlocked, review_requested, review_request_removed]
 jobs:
 
   build:
+    # if triggered by a PR comment or label, skip this job
+    if: github.event_name != 'label'
     runs-on: ubuntu-latest
     env:
       BUILDTAGS: include_gcs include_oss
@@ -40,4 +43,34 @@ jobs:
     - name: Go mod is tidy
       run: |
         git diff --exit-code go.mod go.sum
-
+  # if PR has /ok-to-test label, run e2e tests
+  e2e-on-pr:
+    if: contains(github.event.pull_request.labels.*.name, '/ok-to-test')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: pre-req gpgme
+      run:  sudo apt-get install libgpgme11 libgpgme-dev
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+    - name: Test
+      run: |
+        # enable e2e
+        export UDISTRIBUTION_TEST_E2E_ENABLE=${{ secrets.UDISTRIBUTION_TEST_E2E_ENABLE }}
+        # set env vars from secrets
+        export REGISTRY_STORAGE=${{ secrets.REGISTRY_STORAGE }}
+        export REGISTRY_STORAGE_S3_BUCKET=${{ secrets.REGISTRY_STORAGE_S3_BUCKET }}
+        export REGISTRY_STORAGE_S3_ACCESSKEY=${{ secrets.REGISTRY_STORAGE_S3_ACCESSKEY }}
+        export REGISTRY_STORAGE_S3_SECRETKEY=${{ secrets.REGISTRY_STORAGE_S3_SECRETKEY }}
+        export REGISTRY_STORAGE_S3_REGION=${{ secrets.REGISTRY_STORAGE_S3_REGION }}
+        make test
