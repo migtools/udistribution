@@ -1,0 +1,44 @@
+name: add-ok-to-test-label-on-pr-comment
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review_comment:
+    types: [created]
+jobs:
+  # if PR do not have "ok-to-test" label, ask for "/ok-to-test" comment
+  ask-for-ok-to-test:
+    permissions:
+      issues: write
+      pull-requests: write
+    # if triggered by a PR comment, skip this job
+    if: ${{ github.event_name != 'pull_request_review_comment' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'ok-to-test') }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "@kaovilai Please add a comment with `/ok-to-test` to trigger the e2e"
+            })
+  # if PR comment contains "/ok-to-test" from a @kaovilai, add "ok-to-test" label
+  ok-to-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        if: contains(github.event.comment.body, '/ok-to-test')
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            if (context.payload.comment.user.login == 'kaovilai') {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ["ok-to-test"]
+              })
+            }
