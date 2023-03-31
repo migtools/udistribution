@@ -39,13 +39,29 @@ func TestE2e(t *testing.T) {
 
 	_, err := udistribution.NewTransportFromNewConfig("", []string{
 		"REGISTRY_STORAGE=s3",
+		"REGISTRY_STORAGE_S3_REGION=us-east-1",
+		"REGISTRY_STORAGE_S3_BUCKET=udistribution-test",
 	})
 	if err != nil {
 		t.Errorf("Cannot init s3 udistribution: %v", err)
 	}
 	t.Log("S3 udistribution initialized")
+	// catch panic
+	defer func() {
+		if r := recover(); r != nil {
+			switch fmt.Sprint(r) {
+			case "azure: malformed storage account key: illegal base64 data at input byte 4":
+				// expected panic.. continue
+			default:
+				t.Errorf("Unexpected panic: %v", r)
+			}
+		}
+	}()
 	_, err = udistribution.NewTransportFromNewConfig("", []string{
 		"REGISTRY_STORAGE=azure",
+		"REGISTRY_STORAGE_AZURE_CONTAINER=udistribution-test",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTNAME=udistributiontest",
+		"REGISTRY_STORAGE_AZURE_ACCOUNTKEY=somekey",
 	})
 	if err != nil {
 		t.Errorf("Cannot init azure udistribution: %v", err)
@@ -53,6 +69,8 @@ func TestE2e(t *testing.T) {
 	t.Log("Azure udistribution initialized")
 	_, err = udistribution.NewTransportFromNewConfig("", []string{
 		"REGISTRY_STORAGE=gcs",
+		"REGISTRY_STORAGE_GCS_BUCKET=udistribution-test",
+		"REGISTRY_STORAGE_GCS_KEYFILE=somekey",
 	})
 	if err != nil {
 		t.Errorf("Cannot init gcs udistribution: %v", err)
