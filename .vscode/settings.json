@@ -1,3 +1,3 @@
 {
-    "go.buildTags": "include_gcs include_oss"
+    "go.buildTags": "include_gcs,include_oss"
 }
