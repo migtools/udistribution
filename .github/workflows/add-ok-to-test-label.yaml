@@ -1,9 +1,9 @@
 name: add-ok-to-test-label-on-pr-comment
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited, ready_for_review, locked, unlocked, review_requested, review_request_removed]
   pull_request_review_comment:
-    types: [created]
+    types: [created, edited]
 jobs:
   # if PR do not have "ok-to-test" label, ask for "/ok-to-test" comment
   ask-for-ok-to-test:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
-        if: ${{ !contains(github.event.pull_request.labels.*.name, 'ok-to-test') }}
+        if: ${{ !contains(github.event.pull_request.labels.*.name, '/ok-to-test') }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -28,9 +28,9 @@ jobs:
   # if PR comment contains "/ok-to-test" from a @kaovilai, add "ok-to-test" label
   ok-to-test:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '/ok-to-test')
     steps:
       - uses: actions/github-script@v6
-        if: contains(github.event.comment.body, '/ok-to-test')
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -39,6 +39,6 @@ jobs:
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                labels: ["ok-to-test"]
+                labels: ["/ok-to-test"]
               })
             }
