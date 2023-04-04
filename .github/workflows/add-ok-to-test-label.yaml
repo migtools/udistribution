@@ -1,7 +1,7 @@
 name: add-ok-to-test-label-on-pr-comment
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled, edited, ready_for_review, locked, unlocked, review_requested, review_request_removed]
+    types: [opened, synchronize, reopened, edited, ready_for_review, locked, unlocked, review_requested, review_request_removed]
   pull_request_review_comment:
     types: [created, edited]
   issue_comment:
