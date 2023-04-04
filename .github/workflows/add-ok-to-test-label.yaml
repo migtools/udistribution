@@ -4,6 +4,8 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled, edited, ready_for_review, locked, unlocked, review_requested, review_request_removed]
   pull_request_review_comment:
     types: [created, edited]
+  issue_comment:
+    types: [created, edited]
 jobs:
   # if PR do not have "ok-to-test" label, ask for "/ok-to-test" comment
   ask-for-ok-to-test:
@@ -11,7 +13,7 @@ jobs:
       issues: write
       pull-requests: write
     # if triggered by a PR comment, skip this job
-    if: ${{ github.event_name != 'pull_request_review_comment' }}
+    if: ${{ github.event_name != 'pull_request_review_comment' && github.event_name != 'issue_comment' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
