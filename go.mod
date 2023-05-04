@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d
 	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
-	github.com/bugsnag/bugsnag-go v0.0.0-20141110184014-b1d153021fcd
+	github.com/bugsnag/bugsnag-go v2.2.0+incompatible
 	github.com/containers/image/v5 v5.25.0
 	github.com/containers/storage v1.46.1
 	github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f
@@ -44,6 +44,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20230213213521-fdfea0d469b6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
