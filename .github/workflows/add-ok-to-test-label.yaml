@@ -13,7 +13,7 @@ jobs:
       issues: write
       pull-requests: write
     # if triggered by a PR comment, skip this job
-    if: ${{ github.event_name != 'pull_request_review_comment' && github.event_name != 'issue_comment' }}
+    if: ${{ github.event_name != 'pull_request_review_comment' && github.event_name != 'issue_comment' && github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
@@ -30,17 +30,15 @@ jobs:
   # if PR comment contains "/ok-to-test" from a @kaovilai, add "ok-to-test" label
   ok-to-test:
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.comment.body, '/ok-to-test') || github.actor == 'dependabot[bot]' }}
+    if: ${{ contains(github.event.comment.body, '/ok-to-test') && github.actor == 'kaovilai' || github.actor == 'dependabot[bot]' }}
     steps:
       - uses: actions/github-script@v6
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+        with: #https://github.com/settings/tokens?type=beta
+          github-token: ${{secrets.LABELER_PAT}}
           script: |
-            if (context.payload.comment.user.login == 'kaovilai' || context.payload.comment.user.login == 'dependabot[bot]') {
-              github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ["/ok-to-test"]
-              })
-            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["/ok-to-test"]
+            })
