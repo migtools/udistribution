@@ -6,7 +6,7 @@ require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d
 	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
 	github.com/bugsnag/bugsnag-go v2.2.0+incompatible
-	github.com/containers/image/v5 v5.25.0
+	github.com/containers/image/v5 v5.21.1
 	github.com/containers/storage v1.46.1
 	github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f
 	github.com/docker/docker v24.0.2+incompatible
@@ -14,7 +14,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.5.9
 	github.com/opencontainers/go-digest v1.0.0
-	github.com/opencontainers/image-spec v1.1.0-rc2
+	github.com/opencontainers/image-spec v1.1.0-rc.3
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.2
 	github.com/stretchr/testify v1.8.3
@@ -27,40 +27,16 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v0.13.0 // indirect
 	cloud.google.com/go/storage v1.29.0 // indirect
-	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/cyberphone/json-canonicalization v0.0.0-20220623050100-57a0ce2678a7 // indirect
-	github.com/go-openapi/analysis v0.21.4 // indirect
-	github.com/go-openapi/errors v0.20.3 // indirect
-	github.com/go-openapi/jsonpointer v0.19.5 // indirect
-	github.com/go-openapi/jsonreference v0.20.0 // indirect
-	github.com/go-openapi/loads v0.21.2 // indirect
-	github.com/go-openapi/runtime v0.26.0 // indirect
-	github.com/go-openapi/spec v0.20.9 // indirect
-	github.com/go-openapi/strfmt v0.21.7 // indirect
-	github.com/go-openapi/swag v0.22.3 // indirect
-	github.com/go-openapi/validate v0.22.1 // indirect
-	github.com/google/go-containerregistry v0.14.0 // indirect
 	github.com/google/s2a-go v0.1.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
-	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20230213213521-fdfea0d469b6 // indirect
-	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
-	github.com/sigstore/fulcio v1.2.0 // indirect
-	github.com/sigstore/rekor v1.2.0 // indirect
-	github.com/sigstore/sigstore v1.6.4 // indirect
-	github.com/theupdateframework/go-tuf v0.5.2 // indirect
-	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 // indirect
-	github.com/vbauerster/mpb/v8 v8.3.0 // indirect
-	go.mongodb.org/mongo-driver v1.11.3 // indirect
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
+	github.com/vbauerster/mpb/v7 v7.4.1 // indirect
 	golang.org/x/mod v0.10.0 // indirect
+	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	gopkg.in/go-jose/go-jose.v2 v2.6.1 // indirect
 )
 
 require (
