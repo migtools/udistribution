@@ -7,7 +7,7 @@ require (
 	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
 	github.com/bugsnag/bugsnag-go v2.2.0+incompatible
 	github.com/containers/image/v5 v5.25.0
-	github.com/containers/storage v1.46.1
+	github.com/containers/storage v1.48.0
 	github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f
 	github.com/docker/docker v24.0.2+incompatible
 	github.com/docker/go-connections v0.4.0
@@ -16,7 +16,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc4
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.9.2
+	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -80,8 +80,8 @@ require (
 	github.com/Azure/go-autorest/autorest/date v0.3.0 // indirect
 	github.com/Azure/go-autorest/logger v0.2.1 // indirect
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
-	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/Microsoft/go-winio v0.6.0 // indirect
+	github.com/BurntSushi/toml v1.3.2 // indirect
+	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/aws/aws-sdk-go v1.44.257 // indirect
@@ -113,8 +113,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.16.5 // indirect
-	github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8 // indirect
+	github.com/klauspost/compress v1.16.6 // indirect
+	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/miekg/pkcs11 v1.1.1 // indirect
@@ -123,8 +123,8 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/ncw/swift v1.0.47 // indirect
-	github.com/opencontainers/runc v1.1.5 // indirect
-	github.com/opencontainers/runtime-spec v1.1.0-rc.1 // indirect
+	github.com/opencontainers/runc v1.1.7 // indirect
+	github.com/opencontainers/runtime-spec v1.1.0-rc.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/proglottis/gpgme v0.1.3 // indirect
 	github.com/prometheus/client_golang v1.15.1 // indirect
@@ -142,7 +142,7 @@ require (
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/term v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/api v0.121.0 // indirect
