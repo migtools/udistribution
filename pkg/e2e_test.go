@@ -3,9 +3,7 @@ package pkg
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"os"
-	"strings"
 	"testing"
 
 	azstorage "github.com/Azure/azure-sdk-for-go/storage"
@@ -212,22 +210,9 @@ func TestAzureStore(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			t.Logf("TestE2e recovered from panic: %v", r)
-			// if r.(azstorage.AzureStorageServiceError) can't be used here
-			switch r := r.(type) {
-			case *url.Error:
-				// if error contains "no such host"
-				if strings.Contains(r.Error(), "no such host") {
-					t.Log("azure storage driver initialized and authentication failed as expected")
-				} else {
-					t.Fatalf("TestE2e unexpected error: %v", r)
-				}
-			case azstorage.AzureStorageServiceError:
-				if r.Code == "AuthenticationFailed" {
-					t.Log("azure storage driver initialized and authentication failed as expected")
-				} else {
-					t.Fatalf("TestE2e unexpected error: %v", r)
-				}
-			default:
+			if r.(azstorage.AzureStorageServiceError).Code == "AuthenticationFailed" {
+				t.Log("azure storage driver initialized and authentication failed as expected")
+			} else {
 				t.Fatalf("TestE2e unexpected error: %v", r)
 			}
 		}
