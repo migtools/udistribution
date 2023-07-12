@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/containers/image/v5/types"
-	internal "github.com/kaovilai/udistribution/pkg/image/udistribution/internal/tarfile"
+	internal "github.com/migtools/udistribution/pkg/image/udistribution/internal/tarfile"
 	digest "github.com/opencontainers/go-digest"
 )
 

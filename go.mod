@@ -1,4 +1,4 @@
-module github.com/kaovilai/udistribution
+module github.com/migtools/udistribution
 
 go 1.18
 

@@ -5,11 +5,11 @@ import (
 	"io"
 	"os"
 
-	// "github.com/kaovilai/udistribution/pkg/internal/image/putblobdigest"
-	"github.com/kaovilai/udistribution/pkg/internal/image/putblobdigest"
-	// "github.com/kaovilai/udistribution/pkg/internal/image/tmpdir"
+	// "github.com/migtools/udistribution/pkg/internal/image/putblobdigest"
+	"github.com/migtools/udistribution/pkg/internal/image/putblobdigest"
+	// "github.com/migtools/udistribution/pkg/internal/image/tmpdir"
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/internal/image/tmpdir"
+	"github.com/migtools/udistribution/pkg/internal/image/tmpdir"
 )
 
 // ComputeBlobInfo streams a blob to a temporary file and populates Digest and Size in inputInfo.

@@ -12,8 +12,8 @@ import (
 
 	// "github.com/containers/image/v5/transports"
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/client"
-	"github.com/kaovilai/udistribution/pkg/constants"
+	"github.com/migtools/udistribution/pkg/client"
+	"github.com/migtools/udistribution/pkg/constants"
 	"github.com/pkg/errors"
 )
 

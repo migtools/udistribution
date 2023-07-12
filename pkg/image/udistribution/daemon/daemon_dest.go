@@ -7,7 +7,7 @@ import (
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/types"
 	"github.com/docker/docker/client"
-	"github.com/kaovilai/udistribution/pkg/image/udistribution/internal/tarfile"
+	"github.com/migtools/udistribution/pkg/image/udistribution/internal/tarfile"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

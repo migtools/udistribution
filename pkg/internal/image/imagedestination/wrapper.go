@@ -6,7 +6,7 @@ import (
 	"io"
 
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/internal/image/private"
+	"github.com/migtools/udistribution/pkg/internal/image/private"
 )
 
 // FromPublic(dest) returns an object that provides the private.ImageDestination API

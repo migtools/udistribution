@@ -1,7 +1,7 @@
 package tarfile
 
 import (
-	internal "github.com/kaovilai/udistribution/pkg/image/udistribution/internal/tarfile"
+	internal "github.com/migtools/udistribution/pkg/image/udistribution/internal/tarfile"
 )
 
 // ManifestItem is an element of the array stored in the top-level manifest.json file.

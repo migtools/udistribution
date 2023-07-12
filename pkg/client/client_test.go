@@ -9,7 +9,7 @@ import (
 
 	"github.com/distribution/distribution/v3/configuration"
 	"github.com/google/go-cmp/cmp"
-	uconfig "github.com/kaovilai/udistribution/pkg/distribution/configuration"
+	uconfig "github.com/migtools/udistribution/pkg/distribution/configuration"
 )
 
 func TestNewClient(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/transports"
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/image/udistribution/internal/tarfile"
+	"github.com/migtools/udistribution/pkg/image/udistribution/internal/tarfile"
 	"github.com/pkg/errors"
 )
 

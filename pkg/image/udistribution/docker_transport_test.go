@@ -6,8 +6,8 @@ import (
 
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/client"
-	"github.com/kaovilai/udistribution/pkg/constants"
+	"github.com/migtools/udistribution/pkg/client"
+	"github.com/migtools/udistribution/pkg/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

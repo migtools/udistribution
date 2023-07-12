@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/internal/image/private"
+	"github.com/migtools/udistribution/pkg/internal/image/private"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
