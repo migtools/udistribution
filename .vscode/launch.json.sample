@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch E2E",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "buildFlags": "-tags=include_oss,include_gcs",
+            // run from pkg/e2e_test.go
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "UDISTRIBUTION_TEST_E2E_ENABLE": "true",
+                // Config per https://docs.docker.com/registry/configuration/
+                // Using env format per https://docs.docker.com/registry/configuration/#override-specific-configuration-options
+                "REGISTRY_STORAGE": "s3",
+                "REGISTRY_STORAGE_S3_BUCKET": "internal-bucket-554a0929-70b8-4dd6-bf5e-49f1b2e989aa",
+                "REGISTRY_STORAGE_S3_ACCESSKEY": "acKey",
+                "REGISTRY_STORAGE_S3_SECRETKEY": "scKey",
+                "REGISTRY_STORAGE_S3_REGION": "us-east-1",
+                "REGISTRY_STORAGE_S3_REGIONENDPOINT": "https://s3-openshift-storage.apps.tkaovila.svnp.p1.openshiftapps.com",
+                // "REGISTRY_STORAGE_S3_REGIONENDPOINT": "https://s3-openshift-storage.apps.tkaovila.svnp.p1.openshiftapps.com:443", This do not work yet.
+            },
+        }
+    ]
+}
