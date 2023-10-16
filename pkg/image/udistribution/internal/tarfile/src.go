@@ -14,7 +14,7 @@ import (
 	"github.com/containers/image/v5/manifest"
 	"github.com/containers/image/v5/pkg/compression"
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/internal/image/iolimits"
+	"github.com/migtools/udistribution/pkg/internal/image/iolimits"
 	digest "github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
 )

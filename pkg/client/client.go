@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	// "github.com/distribution/distribution/v3/registry/storage/driver/factory"
-	uconfiguration "github.com/kaovilai/udistribution/pkg/distribution/configuration"
-	"github.com/kaovilai/udistribution/pkg/distribution/registry"
+	uconfiguration "github.com/migtools/udistribution/pkg/distribution/configuration"
+	"github.com/migtools/udistribution/pkg/distribution/registry"
 
 	"github.com/distribution/distribution/v3/configuration"
 	dcontext "github.com/distribution/distribution/v3/context"
@@ -24,7 +24,7 @@ import (
 
 	"github.com/distribution/distribution/v3/uuid"
 	"github.com/distribution/distribution/v3/version"
-	def "github.com/kaovilai/udistribution/pkg/client/default"
+	def "github.com/migtools/udistribution/pkg/client/default"
 )
 
 type Client struct {

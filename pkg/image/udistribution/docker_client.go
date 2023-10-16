@@ -27,7 +27,7 @@ import (
 	"github.com/containers/storage/pkg/homedir"
 	clientLib "github.com/distribution/distribution/v3/registry/client"
 	"github.com/docker/go-connections/tlsconfig"
-	"github.com/kaovilai/udistribution/pkg/internal/image/iolimits"
+	"github.com/migtools/udistribution/pkg/internal/image/iolimits"
 	digest "github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

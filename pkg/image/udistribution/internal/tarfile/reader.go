@@ -10,8 +10,8 @@ import (
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/pkg/compression"
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/internal/image/iolimits"
-	"github.com/kaovilai/udistribution/pkg/internal/image/tmpdir"
+	"github.com/migtools/udistribution/pkg/internal/image/iolimits"
+	"github.com/migtools/udistribution/pkg/internal/image/tmpdir"
 	"github.com/pkg/errors"
 )
 

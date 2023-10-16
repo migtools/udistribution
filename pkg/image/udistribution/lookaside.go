@@ -12,7 +12,7 @@ import (
 	"github.com/containers/image/v5/types"
 	"github.com/containers/storage/pkg/homedir"
 	"github.com/ghodss/yaml"
-	"github.com/kaovilai/udistribution/pkg/internal/image/rootless"
+	"github.com/migtools/udistribution/pkg/internal/image/rootless"
 	"github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

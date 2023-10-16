@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/containers/image/v5/types"
-	"github.com/kaovilai/udistribution/pkg/image/udistribution/internal/tarfile"
+	"github.com/migtools/udistribution/pkg/image/udistribution/internal/tarfile"
 )
 
 type archiveImageSource struct {

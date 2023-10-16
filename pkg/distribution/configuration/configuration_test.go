@@ -7,7 +7,7 @@ import (
 
 	"github.com/distribution/distribution/v3/configuration"
 	"github.com/google/go-cmp/cmp"
-	def "github.com/kaovilai/udistribution/pkg/client/default"
+	def "github.com/migtools/udistribution/pkg/client/default"
 )
 
 func TestParseEnvironment(t *testing.T) {

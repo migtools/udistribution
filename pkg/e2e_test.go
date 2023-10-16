@@ -14,8 +14,8 @@ import (
 	"github.com/containers/image/v5/transports"
 	"github.com/containers/image/v5/types"
 	"github.com/distribution/distribution/v3/uuid"
-	"github.com/kaovilai/udistribution/pkg/image/udistribution"
-	"github.com/kaovilai/udistribution/pkg/internal/image/imagesource"
+	"github.com/migtools/udistribution/pkg/image/udistribution"
+	"github.com/migtools/udistribution/pkg/internal/image/imagesource"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 )
