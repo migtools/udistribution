@@ -87,8 +87,8 @@ github.com/cncf/udpa/go v0.0.0-20210930031921-04548b0d99d4/go.mod h1:6pvJx4me5XP
 github.com/cncf/xds/go v0.0.0-20210805033703-aa0b78936158/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
 github.com/cncf/xds/go v0.0.0-20210922020428-25de7278fc84/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
 github.com/cncf/xds/go v0.0.0-20211011173535-cb28da3451f1/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
-github.com/containers/image/v5 v5.26.1 h1:8y3xq8GO/6y8FR+nAedHPsAFiAtOrab9qHTBpbqaX8g=
-github.com/containers/image/v5 v5.26.1/go.mod h1:IwlOGzTkGnmfirXxt0hZeJlzv1zVukE03WZQ203Z9GA=
+github.com/containers/image/v5 v5.27.0 h1:4jKVWAa4YurTWUyAWMoC71zJkSylBR7pWd0jqGkukYc=
+github.com/containers/image/v5 v5.27.0/go.mod h1:IwlOGzTkGnmfirXxt0hZeJlzv1zVukE03WZQ203Z9GA=
 github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 h1:Qzk5C6cYglewc+UyGf6lc8Mj2UaPTHy/iF2De0/77CA=
 github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01/go.mod h1:9rfv8iPl1ZP7aqh9YA68wnZv2NUDbXdcdPHVz0pFbPY=
 github.com/containers/ocicrypt v1.1.7 h1:thhNr4fu2ltyGz8aMx8u48Ae0Pnbip3ePP9/mzkZ/3U=
