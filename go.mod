@@ -9,7 +9,7 @@ require (
 	github.com/containers/image/v5 v5.27.0
 	github.com/containers/storage v1.48.0
 	github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f
-	github.com/docker/docker v24.0.2+incompatible
+	github.com/docker/docker v24.0.7+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.6.0
