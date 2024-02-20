@@ -92,6 +92,9 @@ func NewParser(prefix string, envs []string, parseInfos []configuration.Versione
 
 	for _, env := range envs {
 		envParts := strings.SplitN(env, "=", 2)
+		if len(envParts) < 2 {
+			continue
+		}
 		p.env = append(p.env, envVar{envParts[0], envParts[1]})
 	}
 
