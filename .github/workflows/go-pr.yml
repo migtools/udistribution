@@ -28,7 +28,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.18
+        go-version: '1.22.7'
 
     - name: Build
       run: go build -tags "${{ env.BUILDTAGS }}" -v ./...
@@ -63,7 +63,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.18
+        go-version: '1.22.7'
     - name: Test
       run: |
         # enable e2e
