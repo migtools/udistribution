@@ -166,4 +166,4 @@ require (
 
 // openshift/docker-distribution release-4.14 branch which contain following unmerged distribution/distribution PRs:
 // - aws shared config support (sts assume role)
-replace github.com/distribution/distribution/v3 => github.com/openshift/docker-distribution/v3 v3.0.0-20250115153311-21eefccb821f
+replace github.com/distribution/distribution/v3 => github.com/openshift/docker-distribution/v3 v3.0.0-20250120104846-a24972526437
