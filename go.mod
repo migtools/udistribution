@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d
 	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
-	github.com/bugsnag/bugsnag-go v2.3.1+incompatible
+	github.com/bugsnag/bugsnag-go v2.6.0+incompatible
 	github.com/containers/image/v5 v5.27.0
 	github.com/containers/storage v1.48.0
 	github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f
