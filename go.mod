@@ -164,6 +164,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// openshift/docker-distribution release-4.14 branch which contain following unmerged distribution/distribution PRs:
+// openshift/docker-distribution release-4.19 branch which contains following unmerged distribution/distribution PRs:
 // - aws shared config support (sts assume role)
-replace github.com/distribution/distribution/v3 => github.com/openshift/docker-distribution/v3 v3.0.0-20250120104846-a24972526437
+// - AWS_CA_BUNDLE support for self-signed certificates (OADP-3143, fixes OADP-641)
+replace github.com/distribution/distribution/v3 => github.com/openshift/docker-distribution/v3 v3.0.0-20250403075108-ac5742e896d4
