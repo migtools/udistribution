@@ -82,7 +82,7 @@ func imageLoadGoroutine(ctx context.Context, c *client.Client, reader *io.PipeRe
 		}
 	}()
 
-	resp, err := c.ImageLoad(ctx, reader, true)
+	resp, err := c.ImageLoad(ctx, reader, client.ImageLoadWithQuiet(true))
 	if err != nil {
 		err = errors.Wrap(err, "saving image to docker engine")
 		return
