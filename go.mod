@@ -65,6 +65,7 @@ require (
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/sys/atomicwriter v0.1.0 // indirect
 	github.com/moby/sys/user v0.3.0 // indirect
+	github.com/ncw/swift/v2 v2.0.4 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/sigstore/fulcio v1.3.1 // indirect
@@ -142,7 +143,6 @@ require (
 	github.com/moby/sys/mountinfo v0.7.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/ncw/swift v1.0.47 // indirect
 	github.com/opencontainers/runc v1.2.8 // indirect
 	github.com/opencontainers/runtime-spec v1.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -176,4 +176,4 @@ require (
 // openshift/docker-distribution release-4.19 branch which contains following unmerged distribution/distribution PRs:
 // - aws shared config support (sts assume role)
 // - AWS_CA_BUNDLE support for self-signed certificates (OADP-3143, fixes OADP-641)
-replace github.com/distribution/distribution/v3 => github.com/openshift/docker-distribution/v3 v3.0.0-20250403075108-ac5742e896d4
+replace github.com/distribution/distribution/v3 => github.com/openshift/docker-distribution/v3 v3.0.0-20250730075113-f365bc3b1cc3
