@@ -9,3 +9,45 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      azure:
+        patterns:
+          - "github.com/Azure/*"
+          - "github.com/AzureAD/*"
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      google-cloud:
+        patterns:
+          - "cloud.google.com/go*"
+          - "google.golang.org/*"
+          - "github.com/googleapis/*"
+      opentelemetry:
+        patterns:
+          - "go.opentelemetry.io/*"
+      docker:
+        patterns:
+          - "github.com/docker/*"
+          - "github.com/moby/*"
+      containers:
+        patterns:
+          - "github.com/containers/*"
+          - "github.com/containerd/*"
+      opencontainers:
+        patterns:
+          - "github.com/opencontainers/*"
+      aws:
+        patterns:
+          - "github.com/aws/*"
+      sigstore:
+        patterns:
+          - "github.com/sigstore/*"
+      prometheus:
+        patterns:
+          - "github.com/prometheus/*"
+      go-openapi:
+        patterns:
+          - "github.com/go-openapi/*"
+      distribution:
+        patterns:
+          - "github.com/distribution/*"
