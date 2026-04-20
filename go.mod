@@ -2,6 +2,8 @@ module github.com/migtools/udistribution
 
 go 1.23.0
 
+toolchain go1.24.3
+
 require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d
 	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
