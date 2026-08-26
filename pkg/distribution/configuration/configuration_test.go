@@ -77,7 +77,7 @@ func TestParseEnvironment(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(gotConfig, tt.wantConfig) {
-				t.Errorf(cmp.Diff(gotConfig, tt.wantConfig))
+				t.Errorf("%s", cmp.Diff(gotConfig, tt.wantConfig))
 				t.Errorf("ParseEnvironment() = %v, want %v", gotConfig, tt.wantConfig)
 			}
 		})

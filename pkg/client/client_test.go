@@ -102,7 +102,7 @@ func TestNewClient(t *testing.T) {
 			}
 			if !reflect.DeepEqual(gotClient, tt.wantClient) {
 				// t.Errorf(cmp.Diff(gotClient.app, tt.wantClient.app))
-				t.Errorf(cmp.Diff(gotClient.config, tt.wantClient.config))
+				t.Errorf("%s", cmp.Diff(gotClient.config, tt.wantClient.config))
 				t.Errorf("NewClient() = %v, want %v", gotClient, tt.wantClient)
 			}
 		})
