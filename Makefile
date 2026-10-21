@@ -10,10 +10,13 @@ test:
 	@pkg-config --exists gpgme || (echo "Error: gpgme library is required for tests. Install with: brew install gpgme (macOS), apt-get install libgpgme-dev (Ubuntu), or dnf install gpgme-devel (Fedora/RHEL)" && exit 1)
 	@# Only packages with test files can be covered; including no-test packages in
 	@# -coverprofile triggers 'go: no such tool "covdata"' on newer Go toolchains.
+	@# Packages without tests are excluded from go test, so compile-check the full
+	@# target with go build to keep them from breaking silently.
 	@# A go list failure (even one that still prints a partial package list) must
 	@# fail the target rather than silently test a subset.
 	@set -e; \
 	TEST_PKGS=$$(go list -tags $(BUILD_TAGS) -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' $(GO_TARGET)) || { echo "Error: go list failed to load packages for $(GO_TARGET)"; exit 1; }; \
+	go build -tags $(BUILD_TAGS) $(GO_TARGET); \
 	if [ -n "$$TEST_PKGS" ]; then \
 		go test -tags $(BUILD_TAGS) -v $$TEST_PKGS -coverprofile cover.out; \
 	else \
