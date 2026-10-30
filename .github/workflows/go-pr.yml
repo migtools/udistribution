@@ -39,6 +39,15 @@ jobs:
 
     - uses: codecov/codecov-action@v2
 
+    - name: Check formatting
+      run: |
+        unformatted=$(gofmt -l .)
+        if [ -n "$unformatted" ]; then
+          echo "These files need gofmt (run 'make fmt'):"
+          echo "$unformatted"
+          exit 1
+        fi
+
     - run: go mod tidy
 
     - name: Go mod is tidy

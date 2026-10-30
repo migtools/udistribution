@@ -58,9 +58,12 @@ jobs:
       run: |
         git diff --exit-code go.mod go.sum
 
-    - name: Format
-      run: go fmt ./...
-    - name: commit format
-      uses: EndBug/add-and-commit@v9.0.0
-      with:
-        message: 'go fmt ./... from Github Actions (Go)'
+    - name: Check formatting
+      run: |
+        # main is protected, so CI cannot push a formatting commit; fail instead.
+        unformatted=$(gofmt -l .)
+        if [ -n "$unformatted" ]; then
+          echo "These files need gofmt (run 'make fmt'):"
+          echo "$unformatted"
+          exit 1
+        fi
